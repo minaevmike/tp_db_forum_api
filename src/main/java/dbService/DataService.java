@@ -11,27 +11,27 @@ public class DataService {
 
     private Connection connection = null;
 
+    public void connect()
+    {
+        try{
+            DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
+
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://" +
+                    "localhost:" +
+                    "3306/" +
+                    "forum?" +
+                    "user=sqadmin&" +
+                    "password=sqadmin");
+
+        } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Connection getConnection()
     {
-        if (connection != null) {
-            return connection;
-        } else {
-            try{
-                DriverManager.registerDriver((Driver) Class.forName("com.mysql.jdbc.Driver").newInstance());
-
-                return DriverManager.getConnection(
-                        "jdbc:mysql://" +
-                        "localhost:" +
-                        "3306/" +
-                        "forum?" +
-                        "user=sqadmin&" +
-                        "password=sqadmin");
-
-            } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
+        return connection;
     }
 }
 
