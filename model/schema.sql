@@ -105,11 +105,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `forum_api`.`Subscriprions`
+-- Table `forum_api`.`Subscriptions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `forum_api`.`Subscriprions` ;
+DROP TABLE IF EXISTS `forum_api`.`Subscriptions` ;
 
-CREATE TABLE IF NOT EXISTS `forum_api`.`Subscriprions` (
+CREATE TABLE IF NOT EXISTS `forum_api`.`Subscriptions` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
   `thread_id` INT NULL,

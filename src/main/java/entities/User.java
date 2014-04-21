@@ -11,18 +11,17 @@ import org.json.simple.parser.ParseException;
 import java.sql.SQLException;
 
 /**
- * Created by Andrey on 21.04.14.
+ * Created by Andrey  21.04.14.
  */
 public class User implements TableInterface {
-/*  [2014-04-21 16:43:12] Requesting http://localhost:8080/db/api/user/create/ with
-    {'username': 'user1', 'about': 'hello im user1', 'isAnonymous': False, 'name': '
-    John', 'email': 'example@mail.ru'} (POST)
-*/
+
     DataService ds;
+    UserDAO dao;
 
     public User(DataService ds)
     {
         this.ds = ds;
+        dao = new UserDAO(ds);
     }
 
     private String create(String data)
@@ -36,11 +35,10 @@ public class User implements TableInterface {
                 e.printStackTrace();
             }
         }
-        UserDAO  ud = new UserDAO(ds);
         try {
-            ud.createUser(userParser.getUserData());
+            dao.createUser(userParser.getUserData());
 
-            UserData created = ud.getUserByMail(userParser.getUserData().getMail());
+            UserData created = dao.getUserByMail(userParser.getUserData().getMail());
             JSONObject obj = new JSONObject();
             JSONObject resultJson = new JSONObject();
 
@@ -66,12 +64,29 @@ public class User implements TableInterface {
         return null;
     }
 
+    private String details(String query)
+    {
+        String[] pairs = query.split("=");
+        UserData userData = null;
+        try {
+            userData = dao.getUserByMail(pairs[1]);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if(userData != null) {
+
+        }
+        return null;
+    }
+
 
     @Override
     public String exec(String method, String data) {
         switch (method) {
         case "create":
             return create(data);
+        case "details":
+            return details(data);
         }
         return null;
     }
