@@ -36,7 +36,10 @@ public class Frontend extends HttpServlet{
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        System.out.print(request.getQueryString());
+        String[] tokens = parseUrl(request.getPathInfo());
+
+        String result = executeApiQuery(tokens[3], tokens[4], request.getQueryString());
+        response.getWriter().print(result);
     }
 
 
