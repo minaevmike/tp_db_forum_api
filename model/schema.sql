@@ -9,12 +9,15 @@ USE `forum_api` ;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Users`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Users` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(32) NULL,
   `mail` VARCHAR(32) NOT NULL,
   `name` VARCHAR(16) NOT NULL,
   `isAnonymous` TINYINT(1) NOT NULL DEFAULT FALSE,
+  `about` VARCHAR(128) NULL,
   PRIMARY KEY (`id`, `mail`, `username`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `mail_UNIQUE` (`mail` ASC))
@@ -24,6 +27,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Forums`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Forums` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Forums` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
@@ -43,6 +48,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Follows`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Follows` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Follows` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user` INT NOT NULL,
@@ -67,6 +74,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Threads`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Threads` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Threads` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
@@ -98,6 +107,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Subscriprions`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Subscriprions` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Subscriprions` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
@@ -122,6 +133,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 -- Table `forum_api`.`Posts`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `forum_api`.`Posts` ;
+
 CREATE TABLE IF NOT EXISTS `forum_api`.`Posts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `thread_id` INT NOT NULL,
