@@ -36,21 +36,7 @@ public class Frontend extends HttpServlet{
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        String[] reqModules = parseUrl(request.getPathInfo());
-
-        switch (reqModules[0]) {
-        default:
-            response.getWriter().println("default");
-            response.getWriter().println(reqModules[1]);
-            response.getWriter().println(reqModules[2]);
-            response.getWriter().println();
-
-            System.out.println("default");
-            System.out.println(reqModules[1]);
-            System.out.println(reqModules[2]);
-            System.out.println();
-            break;
-        }
+        System.out.print(request.getQueryString());
     }
 
 

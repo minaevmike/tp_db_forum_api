@@ -4,6 +4,7 @@ import dataSets.UserData;
 import dataSets.UserParser;
 import dbService.DataService;
 import dbService.dao.UserDAO;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -38,6 +39,26 @@ public class User implements TableInterface {
         UserDAO  ud = new UserDAO(ds);
         try {
             ud.createUser(userParser.getUserData());
+
+            UserData created = ud.getUserByMail(userParser.getUserData().getMail());
+            JSONObject obj = new JSONObject();
+            JSONObject resultJson = new JSONObject();
+
+            obj.put("username", created.getUsername());
+            obj.put("about", created.getAbout());
+            obj.put("isAnonymous", created.isAnonymous());
+            obj.put("name", created.getName());
+            obj.put("email", created.getMail());
+            obj.put("id", created.getId());
+
+            resultJson.put("code", 0);
+            resultJson.put("response", obj);
+
+            System.out.print(resultJson.toJSONString());
+
+            return resultJson.toJSONString();
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
