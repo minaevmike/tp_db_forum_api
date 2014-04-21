@@ -1,6 +1,9 @@
 package frontend;
 
 
+import dbService.DataService;
+import entities.User;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,8 +19,12 @@ import java.text.SimpleDateFormat;
 public class Frontend extends HttpServlet{
 
     private final static DateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
+    private User user;
 
-    public Frontend(){}
+    public Frontend(DataService ds)
+    {
+        user = new User(ds);
+    }
 
     public static String getTime()
     {
@@ -29,10 +36,19 @@ public class Frontend extends HttpServlet{
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
-        String path = request.getPathInfo();
-        switch (path) {
+        String[] reqModules = parseUrl(request.getPathInfo());
+
+        switch (reqModules[0]) {
         default:
             response.getWriter().println("default");
+            response.getWriter().println(reqModules[1]);
+            response.getWriter().println(reqModules[2]);
+            response.getWriter().println();
+
+            System.out.println("default");
+            System.out.println(reqModules[1]);
+            System.out.println(reqModules[2]);
+            System.out.println();
             break;
         }
     }
@@ -42,14 +58,31 @@ public class Frontend extends HttpServlet{
     {
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        String path = request.getPathInfo();
 
-        switch (path) {
-        case "/login":
+        String[] tokens = parseUrl(request.getPathInfo()); //  __/db/api/{{entity}}/{{method}}/
+
+        String result = executeApiQuery(tokens[3], tokens[4], request.getReader().readLine());
+        response.getWriter().print(result);
+    }
+
+    private String[] parseUrl(String path)
+    {
+        return path.split("/");
+    }
+
+    private String executeApiQuery(String entity, String method, String content)
+    {
+        switch (entity) {
+        case "forum":
             break;
-        case "/registerUser":
+        case "post":
+            break;
+        case "user":
+            return user.exec(method, content);
+        case "thread":
             break;
         }
+        return null;
     }
 
 }
