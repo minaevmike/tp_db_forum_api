@@ -32,6 +32,7 @@ DROP TABLE IF EXISTS `forum_api`.`Forums` ;
 CREATE TABLE IF NOT EXISTS `forum_api`.`Forums` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
+  `usermail` VARCHAR(32) NOT NULL,
   `name` VARCHAR(128) NOT NULL,
   `short_name` VARCHAR(128) NULL,
   PRIMARY KEY (`id`, `user_id`),
