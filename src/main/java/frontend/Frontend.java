@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -45,11 +46,14 @@ public class Frontend extends HttpServlet{
         response.setStatus(HttpServletResponse.SC_OK);
 
         String[] tokens = parseUrl(request.getPathInfo());
-
+        String decodedQuery = null;
+        if(request.getQueryString() != null) {
+            decodedQuery = URLDecoder.decode(request.getQueryString(), "UTF-8");
+        }
         ////
-            System.out.println(counter + "\t GET: \t" + tokens[3] + "\t" + tokens[4] + "\t" + request.getQueryString());
+            System.out.println(counter + "\t GET: \t" + tokens[3] + "\t" + tokens[4] + "\t" + decodedQuery);
         ////
-        String result = executeApiQuery(tokens[3], tokens[4], request.getQueryString());
+        String result = executeApiQuery(tokens[3], tokens[4], decodedQuery);
         response.getWriter().print(result);
         ////
             System.out.println(result);

@@ -131,9 +131,8 @@ public class User implements TableInterface {
     private String details(String query)
     {
         String[] pairs = query.split("=");
-        String mail = pairs[1].replaceFirst("%40","@");
         try {
-            UserData userData = getUserByMail(mail);
+            UserData userData = getUserByMail(pairs[1]);
             List<String> followers = getFollowers(userData.getId());
             List<String> following = getFollowing(userData.getId());
             List<String> subscriptions = getSubscriptions(userData.getId());
