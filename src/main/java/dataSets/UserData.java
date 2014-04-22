@@ -1,7 +1,8 @@
 package dataSets;
 
 /**
- * Created by Andrey on 21.04.14.
+ * Created by Andrey
+ * 21.04.14.
  */
 public class UserData {
 
@@ -14,7 +15,7 @@ public class UserData {
 
     public UserData(){}
 
-    public UserData(int id, String about, String username, String mail, String name, boolean isAnonymous)
+    public UserData(int id, String username, String mail, String name, boolean isAnonymous, String about)
     {
         this.id = id;
         this.about = about;
@@ -26,10 +27,6 @@ public class UserData {
 
     public void setAbout(String about) {
         this.about = about;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public void setUsername(String username) {
