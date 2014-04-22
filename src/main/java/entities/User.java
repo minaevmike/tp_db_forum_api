@@ -1,7 +1,7 @@
 package entities;
 
 import dataSets.UserData;
-import dataSets.UserParser;
+import dataSets.parser.UserParser;
 import dbService.DataService;
 import dbService.executor.SimpleExecutor;
 import dbService.executor.TExecutor;
@@ -111,19 +111,13 @@ public class User implements TableInterface {
 
     private String create(String data)
     {
-        JSONParser parser = new JSONParser();
-        UserParser userParser = new UserParser();
-        while(!userParser.isEnd()){
-            try {
-                parser.parse(data, userParser, true);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
         try {
-            createUser(userParser.getUserData());
+            UserParser userParser = new UserParser();
+            userParser.parse(data);
 
-            UserData created = getUserByMail(userParser.getUserData().getMail());
+            createUser(userParser.getResult());
+
+            UserData created = getUserByMail(userParser.getResult().getMail());
             JSONObject userObj = UserDataToJson(created);
 
             return createResponse(userObj).toJSONString();
@@ -131,7 +125,6 @@ public class User implements TableInterface {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
