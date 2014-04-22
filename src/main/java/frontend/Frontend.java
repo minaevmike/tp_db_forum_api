@@ -20,6 +20,7 @@ public class Frontend extends HttpServlet{
 
     private final static DateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
     private User user;
+    private int counter = 0;
 
     public Frontend(DataService ds)
     {
@@ -33,11 +34,15 @@ public class Frontend extends HttpServlet{
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
     {
+        counter++;
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
         String[] tokens = parseUrl(request.getPathInfo());
 
+        ////
+            System.out.println(counter + "\t GET: \t" + tokens[3] + "\t" + tokens[4] + "\t" + request.getQueryString());
+        ////
         String result = executeApiQuery(tokens[3], tokens[4], request.getQueryString());
         response.getWriter().print(result);
     }
@@ -45,12 +50,18 @@ public class Frontend extends HttpServlet{
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
     {
+        counter++;
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
         String[] tokens = parseUrl(request.getPathInfo()); //  __/db/api/{{entity}}/{{method}}/
 
-        String result = executeApiQuery(tokens[3], tokens[4], request.getReader().readLine());
+        ////
+        String line = request.getReader().readLine();
+        System.out.println(counter + "\t POST: \t" + tokens[3] + "\t" + tokens[4] + "\t" + line);
+        ////
+
+        String result = executeApiQuery(tokens[3], tokens[4], line);
         response.getWriter().print(result);
     }
 
