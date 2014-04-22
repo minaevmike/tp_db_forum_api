@@ -16,11 +16,11 @@ public class ForumData {
     public ForumData() {
     }
 
-    public ForumData(int id, String userMail, String name, String short_name) {
+    public ForumData(int id, String userMail, String short_name, String name) {
         this.id = id;
         this.userMail = userMail;
-        this.name = name;
         this.short_name = short_name;
+        this.name = name;
     }
 
     public int getId() {

@@ -70,7 +70,18 @@ public class Forum implements TableInterface {
         return null;
     }
 
-    private String details(String data) {
+    private String details(String query)
+    {
+        //related=['user']&forum=forumwithsufficientlylargename
+        String[] expressions = query.split("&");
+        boolean use_related = expressions[0].split("=")[1] == "['user']";
+        String forumName = expressions[1].split("=")[1];
+
+        if(use_related) {
+
+        }
+
+
         return null;
     }
 
