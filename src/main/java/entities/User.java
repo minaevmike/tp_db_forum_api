@@ -9,6 +9,7 @@ import dbService.handlers.TResultHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import utils.ValueStringBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,7 +56,7 @@ public class User implements TableInterface {
         };
 
         return exec.execQuery(dataService.getConnection(),
-               "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.user=" + id, resultHandler);
+               "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.user=" + String.valueOf(id), resultHandler);
     }
 
     private List<String> getFollowing(int id) throws SQLException {
@@ -72,7 +73,7 @@ public class User implements TableInterface {
         };
 
         return exec.execQuery(dataService.getConnection(),
-                "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.follow=" + id, resultHandler);
+                "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.follow=" + String.valueOf(id), resultHandler);
     }
 
     private List<String> getSubscriptions(int id) throws SQLException {
@@ -89,22 +90,22 @@ public class User implements TableInterface {
         };
 
         return exec.execQuery(dataService.getConnection(),
-                "SELECT thread_id FROM Subscriptions WHERE user_id=" + id, resultHandler);
+                "SELECT thread_id FROM Subscriptions WHERE user_id=" + String.valueOf(id), resultHandler);
     }
 
     private void createUser(UserData user) throws SQLException
     {
         SimpleExecutor exec = new SimpleExecutor();
-        StringBuilder sb = new StringBuilder();
-        sb.append("INSERT INTO Users (`username`, `mail`, `name`, `isAnonymous`, `about`) VALUES (")
-                .append("'").append(user.getUsername()).append("'") .append(",")
-                .append("'").append(user.getMail()).append("'")     .append(",")
-                .append("'").append(user.getName()).append("'")     .append(",")
-                            .append(user.isAnonymous())             .append(",")
-                .append("'").append(user.getAbout()).append("'")
-                .append(")");
+        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Users (`username`, `mail`, `name`, `isAnonymous`, `about`) VALUES (");
+        vsb.append(user.getUsername())
+           .append(user.getMail())
+           .append(user.getName())
+           .append(user.isAnonymous())
+           .append(user.getAbout())
+           .close();
 
-        exec.execUpdate(dataService.getConnection(), sb.toString());
+        System.out.println(vsb.toString());
+        exec.execUpdate(dataService.getConnection(), vsb.toString());
     }
 
 
@@ -190,6 +191,5 @@ public class User implements TableInterface {
 
         return resultJson;
     }
-
 
 }
