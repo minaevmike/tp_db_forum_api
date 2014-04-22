@@ -32,11 +32,12 @@ DROP TABLE IF EXISTS `forum_api`.`Forums` ;
 CREATE TABLE IF NOT EXISTS `forum_api`.`Forums` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `user_mail` VARCHAR(32) NOT NULL,
-  `name` VARCHAR(128) NULL,
   `short_name` VARCHAR(128) NOT NULL,
-  PRIMARY KEY (`id`, `user_mail`),
+  `name` VARCHAR(128) NULL,
+  PRIMARY KEY (`id`, `user_mail`, `short_name`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_Forums_Users1_idx` (`user_mail` ASC),
+  UNIQUE INDEX `short_name_UNIQUE` (`short_name` ASC),
   CONSTRAINT `fk_Forums_Users1`
     FOREIGN KEY (`user_mail`)
     REFERENCES `forum_api`.`Users` (`mail`)
