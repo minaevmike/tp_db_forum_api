@@ -1,5 +1,7 @@
 package dataSets;
 
+import org.json.simple.JSONObject;
+
 /**
  * Created by Andrey
  * 21.04.14.
@@ -69,5 +71,19 @@ public class UserData {
 
     public boolean isAnonymous() {
         return isAnonymous;
+    }
+
+    public JSONObject toJson()
+    {
+        JSONObject obj = new JSONObject();
+
+        obj.put("username", username);
+        obj.put("about", about);
+        obj.put("isAnonymous", isAnonymous);
+        obj.put("name", name);
+        obj.put("email", mail);
+        obj.put("id", id);
+
+        return obj;
     }
 }

@@ -9,6 +9,7 @@ import dbService.handlers.TResultHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import utils.JsonHelper;
 import utils.ValueStringBuilder;
 
 import java.sql.ResultSet;
@@ -118,9 +119,8 @@ public class User implements TableInterface {
             createUser(userParser.getResult());
 
             UserData created = getUserByMail(userParser.getResult().getMail());
-            JSONObject userObj = UserDataToJson(created);
 
-            return createResponse(userObj).toJSONString();
+            return JsonHelper.createResponse(created.toJson()).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -138,12 +138,12 @@ public class User implements TableInterface {
             List<String> following = getFollowing(userData.getId());
             List<String> subscriptions = getSubscriptions(userData.getId());
 
-            JSONObject obj = UserDataToJson(userData);
+            JSONObject obj = userData.toJson();
             obj.put("following", following);
             obj.put("followers", followers);
             obj.put("subscriptions", subscriptions);
 
-            return createResponse(obj).toJSONString();
+            return JsonHelper.createResponse(obj).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -161,28 +161,4 @@ public class User implements TableInterface {
         }
         return null;
     }
-
-    private JSONObject UserDataToJson(UserData user)
-    {
-        JSONObject obj = new JSONObject();
-
-        obj.put("username", user.getUsername());
-        obj.put("about", user.getAbout());
-        obj.put("isAnonymous", user.isAnonymous());
-        obj.put("name", user.getName());
-        obj.put("email", user.getMail());
-        obj.put("id", user.getId());
-
-        return obj;
-    }
-
-    private JSONObject createResponse(JSONObject obj)
-    {
-        JSONObject resultJson = new JSONObject();
-        resultJson.put("code", 0);
-        resultJson.put("response", obj);
-
-        return resultJson;
-    }
-
 }
