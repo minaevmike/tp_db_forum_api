@@ -2,7 +2,9 @@ package frontend;
 
 
 import dbService.DataService;
+import entities.Forum;
 import entities.User;
+import entities.Utils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -20,11 +22,15 @@ public class Frontend extends HttpServlet{
 
     private final static DateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
     private User user;
+    private Forum forum;
+    private Utils utils;
     private int counter = 0;
 
     public Frontend(DataService ds)
     {
         user = new User(ds);
+        forum = new Forum(ds);
+        utils = new Utils(ds);
     }
 
     public static String getTime()
@@ -80,13 +86,15 @@ public class Frontend extends HttpServlet{
     {
         switch (entity) {
         case "forum":
-            break;
+            return forum.exec(method, content);
         case "post":
             break;
         case "user":
             return user.exec(method, content);
         case "thread":
             break;
+        case "util":
+            return utils.exec(method, content);
         }
         return null;
     }
