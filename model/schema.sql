@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `forum_api`.`Users` (
   `name` VARCHAR(16) NOT NULL,
   `isAnonymous` TINYINT(1) NOT NULL DEFAULT FALSE,
   `about` VARCHAR(128) NULL,
-  PRIMARY KEY (`id`, `mail`, `username`),
+  PRIMARY KEY (`id`, `mail`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `mail_UNIQUE` (`mail` ASC))
 ENGINE = InnoDB;
