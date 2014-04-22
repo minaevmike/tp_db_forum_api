@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `forum_api`.`Users` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(32) NULL,
   `mail` VARCHAR(32) NOT NULL,
-  `name` VARCHAR(16) NOT NULL,
+  `name` VARCHAR(16) NULL,
   `isAnonymous` TINYINT(1) NOT NULL DEFAULT FALSE,
   `about` VARCHAR(128) NULL,
   PRIMARY KEY (`id`, `mail`),
