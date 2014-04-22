@@ -124,10 +124,8 @@ public class User implements TableInterface {
 
             UserData created = getUserByMail(userParser.getUserData().getMail());
             JSONObject userObj = UserDataToJson(created);
-            JSONObject resultJson = createResponse(userObj);
 
-            System.out.println(resultJson.toJSONString());
-            return resultJson.toJSONString();
+            return createResponse(userObj).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -150,10 +148,8 @@ public class User implements TableInterface {
             obj.put("following", following);
             obj.put("followers", followers);
             obj.put("subscriptions", subscriptions);
-            JSONObject resultJson = createResponse(obj);
 
-            System.out.println(resultJson.toJSONString());
-            return resultJson.toJSONString();
+            return createResponse(obj).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();

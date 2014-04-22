@@ -45,6 +45,9 @@ public class Frontend extends HttpServlet{
         ////
         String result = executeApiQuery(tokens[3], tokens[4], request.getQueryString());
         response.getWriter().print(result);
+        ////
+            System.out.println(result);
+        ////
     }
 
 
@@ -57,12 +60,15 @@ public class Frontend extends HttpServlet{
         String[] tokens = parseUrl(request.getPathInfo()); //  __/db/api/{{entity}}/{{method}}/
 
         ////
-        String line = request.getReader().readLine();
-        System.out.println(counter + "\t POST: \t" + tokens[3] + "\t" + tokens[4] + "\t" + line);
+            String line = request.getReader().readLine();
+            System.out.println(counter + "\t POST: \t" + tokens[3] + "\t" + tokens[4] + "\t" + line);
         ////
 
         String result = executeApiQuery(tokens[3], tokens[4], line);
         response.getWriter().print(result);
+        ////
+            System.out.println(result);
+        ////
     }
 
     private String[] parseUrl(String path)
