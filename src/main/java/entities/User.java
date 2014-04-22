@@ -72,7 +72,7 @@ public class User implements TableInterface {
         };
 
         return exec.execQuery(dataService.getConnection(),
-                "SELECT user FROM Follows WHERE follow=" + id, resultHandler);
+                "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.follow=" + id, resultHandler);
     }
 
     private List<String> getSubscriptions(int id) throws SQLException {
@@ -160,7 +160,6 @@ public class User implements TableInterface {
         }
         return null;
     }
-
 
     @Override
     public String exec(String method, String data) {
