@@ -1,6 +1,5 @@
 package dataSets.parser;
 
-import dataSets.UserData;
 import org.json.simple.parser.ContentHandler;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
