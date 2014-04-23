@@ -13,6 +13,7 @@ import utils.ValueStringBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Andrey on 22.04.14.
@@ -26,41 +27,14 @@ public class Forum implements TableInterface {
         this.dataService = dataService;
     }
 
-    private ForumData getForumByUserMail(String mail) throws SQLException
-    {
-        TExecutor exec = new TExecutor();
-        TResultHandler<ForumData> resultHandler = new TResultHandler<ForumData>(){
-
-            public ForumData handle(ResultSet result) throws SQLException {
-                result.next();
-                return new ForumData(result.getInt(1), result.getString(2), result.getString(3),
-                        result.getString(4));
-            }
-        };
-        return exec.execQuery(dataService.getConnection(), "SELECT * FROM Forums WHERE user_mail='" + mail + "'", resultHandler);
-    }
-
-    private void createForum(ForumData forum) throws SQLException
-    {
-        SimpleExecutor exec = new SimpleExecutor();
-        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Forums (`user_mail`, `name`, `short_name`) VALUES (");
-        vsb.append(forum.getUserMail())
-           .append(forum.getName())
-           .append(forum.getShort_name())
-           .close();
-
-        System.out.println(vsb.toString());
-        exec.execUpdate(dataService.getConnection(), vsb.toString());
-    }
-
     private String create(String data)
     {
         try {
             ForumParser forumParser = new ForumParser();
             forumParser.parse(data);
 
-            createForum(forumParser.getResult());
-            ForumData created = getForumByUserMail(forumParser.getResult().getUserMail());
+            dataService.createForum(forumParser.getResult());
+            ForumData created = dataService.getForumByShortName(forumParser.getResult().getShort_name());
 
             return JsonHelper.createResponse(created.toJson()).toJSONString();
 
@@ -77,10 +51,32 @@ public class Forum implements TableInterface {
         boolean use_related = expressions[0].split("=")[1] == "['user']";
         String forumName = expressions[1].split("=")[1];
 
-        if(use_related) {
+        try {
+            ForumData forumData = dataService.getForumByName(forumName);
 
+            JSONObject forumObj = forumData.toJson();
+
+            if(use_related) {
+                UserData userData = dataService.getUserByMail(forumData.getUserMail());
+                JSONObject userObj = userData.toJson();
+
+                List<String> followers = dataService.getFollowers(userData.getId());
+                List<String> following = dataService.getFollowing(userData.getId());
+                List<String> subscriptions = dataService.getSubscriptions(userData.getId());
+
+                userObj.put("following", following);
+                userObj.put("followers", followers);
+                userObj.put("subscriptions", subscriptions);
+
+                forumObj.remove("user");
+                forumObj.put("user", userObj);
+            }
+
+        return JsonHelper.createResponse(forumObj).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
 
         return null;
     }

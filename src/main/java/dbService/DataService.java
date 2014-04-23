@@ -1,9 +1,16 @@
 package dbService;
 
-import java.sql.Connection;
-import java.sql.Driver;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import dataSets.ForumData;
+import dataSets.UserData;
+import dbService.executor.SimpleExecutor;
+import dbService.executor.TExecutor;
+import dbService.handlers.TResultHandler;
+import utils.ValueStringBuilder;
+
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * Created by Andrey
  */
@@ -33,5 +40,132 @@ public class DataService {
     {
         return connection;
     }
+
+    public UserData getUserByMail(String userMail) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<UserData> resultHandler = new TResultHandler<UserData>(){
+
+            public UserData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new UserData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4),
+                        result.getBoolean(5), result.getString(6));
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Users WHERE mail='" + userMail +"'", resultHandler);
+    }
+
+    public List<String> getFollowers(int id) throws SQLException {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+
+            public List<String> handle(ResultSet result) throws SQLException {
+                List<String> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getString(1));
+                }
+                return list;
+            }
+        };
+
+        return exec.execQuery(getConnection(),
+                "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.user=" + String.valueOf(id), resultHandler);
+    }
+
+    public List<String> getFollowing(int id) throws SQLException {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+
+            public List<String> handle(ResultSet result) throws SQLException {
+                List<String> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getString(1));
+                }
+                return list;
+            }
+        };
+
+        return exec.execQuery(getConnection(),
+                "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.follow=" + String.valueOf(id), resultHandler);
+    }
+
+    public List<String> getSubscriptions(int id) throws SQLException {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+
+            public List<String> handle(ResultSet result) throws SQLException {
+                List<String> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getString(1));
+                }
+                return list;
+            }
+        };
+
+        return exec.execQuery(getConnection(),
+                "SELECT thread_id FROM Subscriptions WHERE user_id=" + String.valueOf(id), resultHandler);
+    }
+
+    public void createUser(UserData user) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Users (`username`, `mail`, `name`, `isAnonymous`, `about`) VALUES (");
+        vsb.append(user.getUsername())
+                .append(user.getMail())
+                .append(user.getName())
+                .append(user.isAnonymous())
+                .append(user.getAbout())
+                .close();
+
+        System.out.println(vsb.toString());
+        exec.execUpdate(getConnection(), vsb.toString());
+    }
+
+
+    public ForumData getForumByShortName(String sName) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<ForumData> resultHandler = new TResultHandler<ForumData>(){
+
+            public ForumData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new ForumData(result.getInt(1), result.getString(2), result.getString(3),
+                        result.getString(4));
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Forums WHERE short_name='" + sName + "'", resultHandler);
+    }
+
+    public ForumData getForumByName(String name) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<ForumData> resultHandler = new TResultHandler<ForumData>(){
+
+            public ForumData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new ForumData(result.getInt(1), result.getString(2), result.getString(3),
+                        result.getString(4));
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Forums WHERE short_name='" + name + "'", resultHandler);
+    }
+
+
+    public void createForum(ForumData forum) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Forums (`user_mail`, `name`, `short_name`) VALUES (");
+        vsb.append(forum.getUserMail())
+                .append(forum.getName())
+                .append(forum.getShort_name())
+                .close();
+
+        System.out.println(vsb.toString());
+        exec.execUpdate(getConnection(), vsb.toString());
+    }
+
+
+
+
 }
 
