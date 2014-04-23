@@ -1,5 +1,7 @@
 package utils;
 
+import java.util.Date;
+
 /**
  * Created by Andrey
  * 22.04.14.
@@ -34,6 +36,13 @@ public class ValueStringBuilder {
     {
         count();
         sb.append(bool);
+        return this;
+    }
+
+    public ValueStringBuilder append(Date date)
+    {
+        count();
+        sb.append(date);
         return this;
     }
 

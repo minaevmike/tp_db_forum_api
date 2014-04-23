@@ -1,6 +1,7 @@
 package dbService;
 
 import dataSets.ForumData;
+import dataSets.ThreadData;
 import dataSets.UserData;
 import dbService.executor.SimpleExecutor;
 import dbService.executor.TExecutor;
@@ -147,8 +148,6 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT id FROM Forums WHERE short_name='" + sName +"'", resultHandler);
     }
 
-
-
     public ForumData getForumByShortName(String sName) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -193,6 +192,28 @@ public class DataService {
 
 
 
+
+    public int createThread(ThreadData thread) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Threads (" +
+        "`user_id`, `forum_id`, `date`, `likes`, `dislikes`,`message`, `points`, `slug`, `title`, `isDeleted`, `isClosed`) VALUES (");
+        vsb.append(thread.getUser_id())
+           .append(thread.getForum_id())
+           .append(thread.getDate())
+           .append(thread.getLikes())
+           .append(thread.getDislikes())
+           .append(thread.getMessage())
+           .append(thread.getPoints())
+           .append(thread.getSlug())
+           .append(thread.getTitle())
+           .append(thread.isDeleted())
+           .append(thread.isClosed())
+           .close();
+
+        System.out.println(vsb.toString());
+        return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
+    }
 
 }
 

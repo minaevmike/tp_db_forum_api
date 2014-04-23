@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * Created by Andrey on 22.04.14.
+ * Created by Andrey
+ * 23.04.14.
  */
 public class Thread implements EntityInterface {
 
@@ -31,11 +32,11 @@ public class Thread implements EntityInterface {
 
             int user_id = dataService.getUserIdByMail(threadParser.getResult().getUser());
             int forum_id = dataService.getForumIdByShortName(threadParser.getResult().getForum());
+            ThreadData threadData = new ThreadData(threadParser.getResult(), user_id, forum_id);
 
-            //int id = dataService.createThread(new ThreadData(threadParser.getResult(), user_id, forum_id));
-            //ThreadData created = dataService.getThreadByShortName(threadParser.getResult().getSlug());
-
-            //return JsonHelper.createResponse(created.toJson()).toJSONString();
+            int id = dataService.createThread(threadData);
+            threadData.setId(id);
+            return JsonHelper.createResponse(threadData.toJson()).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
