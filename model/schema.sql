@@ -88,6 +88,8 @@ CREATE TABLE IF NOT EXISTS `forum_api`.`Threads` (
   `points` INT NULL,
   `slug` VARCHAR(128) NOT NULL,
   `title` VARCHAR(128) NOT NULL,
+  `isDeleted` TINYINT(1) NOT NULL,
+  `isClosed` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`, `user_id`, `forum_id`),
   UNIQUE INDEX `idThreads_UNIQUE` (`id` ASC),
   INDEX `fk_Threads_Forums1_idx` (`forum_id` ASC),
