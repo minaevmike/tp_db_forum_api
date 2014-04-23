@@ -25,4 +25,17 @@ public class SimpleExecutor {
 		stmt.execute(update);
 		stmt.close();
 	}
+
+    public int execUpdateAndReturnId(Connection connection, String update) throws SQLException
+    {
+        Statement stmt = connection.createStatement();
+        stmt.execute(update, Statement.RETURN_GENERATED_KEYS);
+
+        ResultSet created = stmt.getGeneratedKeys();
+        created.next();
+        int id = created.getInt(1);
+
+        stmt.close();
+        return id;
+    }
 }
