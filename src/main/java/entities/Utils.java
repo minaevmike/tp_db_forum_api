@@ -1,13 +1,6 @@
 package entities;
 
-import dataSets.ForumData;
-import dataSets.parser.ForumParser;
 import dbService.DataService;
-import dbService.executor.SimpleExecutor;
-import dbService.executor.TExecutor;
-import dbService.handlers.TResultHandler;
-import utils.JsonHelper;
-import utils.ValueStringBuilder;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +11,7 @@ import java.sql.SQLException;
  * Created by Andrey
  * 22.04.14.
  */
-public class Utils implements TableInterface {
+public class Utils implements EntityInterface {
 
     DataService dataService;
 

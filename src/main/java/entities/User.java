@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Andrey  21.04.14.
  */
-public class User implements TableInterface {
+public class User implements EntityInterface {
 
     DataService dataService;
 
@@ -26,12 +26,12 @@ public class User implements TableInterface {
         try {
             UserParser userParser = new UserParser();
             userParser.parse(data);
+            UserData userData = userParser.getResult();
 
-            dataService.createUser(userParser.getResult());
+            int id = dataService.createUser(userData);
 
-            UserData created = dataService.getUserByMail(userParser.getResult().getMail());
-
-            return JsonHelper.createResponse(created.toJson()).toJSONString();
+            userData.setId(id);
+            return JsonHelper.createResponse(userData.toJson()).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();

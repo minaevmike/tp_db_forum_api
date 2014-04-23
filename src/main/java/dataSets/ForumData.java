@@ -27,6 +27,10 @@ public class ForumData {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getUserMail() {
         return userMail;
     }

@@ -4,21 +4,16 @@ import dataSets.ForumData;
 import dataSets.UserData;
 import dataSets.parser.ForumParser;
 import dbService.DataService;
-import dbService.executor.SimpleExecutor;
-import dbService.executor.TExecutor;
-import dbService.handlers.TResultHandler;
 import org.json.simple.JSONObject;
 import utils.JsonHelper;
-import utils.ValueStringBuilder;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Created by Andrey on 22.04.14.
  */
-public class Forum implements TableInterface {
+public class Forum implements EntityInterface {
 
     DataService dataService;
 
@@ -32,11 +27,12 @@ public class Forum implements TableInterface {
         try {
             ForumParser forumParser = new ForumParser();
             forumParser.parse(data);
+            ForumData forumData = forumParser.getResult();
 
-            dataService.createForum(forumParser.getResult());
-            ForumData created = dataService.getForumByShortName(forumParser.getResult().getShort_name());
+            int id = dataService.createForum(forumData);
+            forumData.setId(id);
 
-            return JsonHelper.createResponse(created.toJson()).toJSONString();
+            return JsonHelper.createResponse(forumData.toJson()).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
