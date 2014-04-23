@@ -41,6 +41,19 @@ public class DataService {
         return connection;
     }
 
+    public int getUserIdByMail(String userMail) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<Integer> resultHandler = new TResultHandler<Integer>(){
+
+            public Integer handle(ResultSet result) throws SQLException {
+                result.next();
+                return result.getInt(1);
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT id FROM Users WHERE mail='" + userMail +"'", resultHandler);
+    }
+
     public UserData getUserByMail(String userMail) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -106,7 +119,7 @@ public class DataService {
                 "SELECT thread_id FROM Subscriptions WHERE user_id=" + String.valueOf(id), resultHandler);
     }
 
-    public void createUser(UserData user) throws SQLException
+    public int createUser(UserData user) throws SQLException
     {
         SimpleExecutor exec = new SimpleExecutor();
         ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Users (`username`, `mail`, `name`, `isAnonymous`, `about`) VALUES (");
@@ -118,8 +131,22 @@ public class DataService {
                 .close();
 
         System.out.println(vsb.toString());
-        exec.execUpdate(getConnection(), vsb.toString());
+        return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
+
+    public int getForumIdByShortName(String sName) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<Integer> resultHandler = new TResultHandler<Integer>(){
+
+            public Integer handle(ResultSet result) throws SQLException {
+                result.next();
+                return result.getInt(1);
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT id FROM Forums WHERE short_name='" + sName +"'", resultHandler);
+    }
+
 
 
     public ForumData getForumByShortName(String sName) throws SQLException
@@ -151,7 +178,7 @@ public class DataService {
     }
 
 
-    public void createForum(ForumData forum) throws SQLException
+    public int createForum(ForumData forum) throws SQLException
     {
         SimpleExecutor exec = new SimpleExecutor();
         ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Forums (`user_mail`, `name`, `short_name`) VALUES (");
@@ -161,7 +188,7 @@ public class DataService {
                 .close();
 
         System.out.println(vsb.toString());
-        exec.execUpdate(getConnection(), vsb.toString());
+        return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
 

@@ -27,6 +27,10 @@ public class UserData {
         this.isAnonymous = isAnonymous;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public void setAbout(String about) {
         this.about = about;
     }
