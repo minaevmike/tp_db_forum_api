@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
  */
 public class Frontend extends HttpServlet{
 
-    private final static DateFormat FORMATTER = new SimpleDateFormat("HH:mm:ss");
     private User user;
     private Forum forum;
     private entities.Thread thread;
@@ -33,11 +32,6 @@ public class Frontend extends HttpServlet{
         forum = new Forum(ds);
         thread = new Thread(ds);
         utils = new Utils(ds);
-    }
-
-    public static String getTime()
-    {
-        return FORMATTER.format(new Date());
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 

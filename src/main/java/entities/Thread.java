@@ -46,18 +46,28 @@ public class Thread implements EntityInterface {
 
     private String details(String query)
     {
-        //related=['user']&forum=forumwithsufficientlylargename
+        //related=['forum', 'user']&thread=1
         String[] expressions = query.split("&");
-        boolean use_related = expressions[0].split("=")[1] == "['user']";
-        String forumName = expressions[1].split("=")[1];
+        boolean related_user = false;
+        boolean related_forum = false;
+
+        if(expressions[0] != null) {
+            String[] values = expressions[0].split("=");
+            related_user = (values[1].indexOf("user") != -1);
+            related_forum = (values[1].indexOf("forum") != -1);
+        }
+
+        int id = Integer.parseInt(expressions[1].split("=")[1]);
 
         try {
-            ForumData forumData = dataService.getForumByName(forumName);
+            ThreadData threadData = dataService.getThreadById(id);
 
-            JSONObject forumObj = forumData.toJson();
+            JSONObject threadObj = threadData.toJson();
+            threadObj.remove("user_id");
+            threadObj.remove("forum_id");
 
-            if(use_related) {
-                UserData userData = dataService.getUserByMail(forumData.getUserMail());
+            if(related_user) {
+                UserData userData = dataService.getUserById(threadData.getUser_id());
                 JSONObject userObj = userData.toJson();
 
                 List<String> followers = dataService.getFollowers(userData.getId());
@@ -68,11 +78,21 @@ public class Thread implements EntityInterface {
                 userObj.put("followers", followers);
                 userObj.put("subscriptions", subscriptions);
 
-                forumObj.remove("user");
-                forumObj.put("user", userObj);
+                threadObj.put("user", userObj);
+            }
+            else {
+                threadObj.put("user", dataService.getUserMailById(threadData.getUser_id()));
             }
 
-        return JsonHelper.createResponse(forumObj).toJSONString();
+            if(related_forum) {
+                ForumData forumData = dataService.getForumById(threadData.getForum_id());
+
+                threadObj.put("forum", forumData.toJson());
+            } else {
+                threadObj.put("forum", dataService.getForumShortNameById(threadData.getForum_id()));
+            }
+
+        return JsonHelper.createResponse(threadObj).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();

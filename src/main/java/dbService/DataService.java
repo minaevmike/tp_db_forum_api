@@ -6,6 +6,7 @@ import dataSets.UserData;
 import dbService.executor.SimpleExecutor;
 import dbService.executor.TExecutor;
 import dbService.handlers.TResultHandler;
+import utils.DateHelper;
 import utils.ValueStringBuilder;
 
 import java.sql.*;
@@ -42,6 +43,19 @@ public class DataService {
         return connection;
     }
 
+    public String getUserMailById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<String> resultHandler = new TResultHandler<String>(){
+
+            public String handle(ResultSet result) throws SQLException {
+                result.next();
+                return result.getString(1);
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT mail FROM Users WHERE id=" + String.valueOf(id), resultHandler);
+    }
+
     public int getUserIdByMail(String userMail) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -55,6 +69,7 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT id FROM Users WHERE mail='" + userMail +"'", resultHandler);
     }
 
+
     public UserData getUserByMail(String userMail) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -67,6 +82,20 @@ public class DataService {
             }
         };
         return exec.execQuery(getConnection(), "SELECT * FROM Users WHERE mail='" + userMail +"'", resultHandler);
+    }
+
+    public UserData getUserById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<UserData> resultHandler = new TResultHandler<UserData>(){
+
+            public UserData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new UserData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4),
+                        result.getBoolean(5), result.getString(6));
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Users WHERE id=" + String.valueOf(id), resultHandler);
     }
 
     public List<String> getFollowers(int id) throws SQLException {
@@ -135,6 +164,19 @@ public class DataService {
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
+    public String getForumShortNameById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<String> resultHandler = new TResultHandler<String>(){
+
+            public String handle(ResultSet result) throws SQLException {
+                result.next();
+                return result.getString(1);
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT short_name FROM Forums WHERE id=" + String.valueOf(id), resultHandler);
+    }
+
     public int getForumIdByShortName(String sName) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -147,6 +189,7 @@ public class DataService {
         };
         return exec.execQuery(getConnection(), "SELECT id FROM Forums WHERE short_name='" + sName +"'", resultHandler);
     }
+
 
     public ForumData getForumByShortName(String sName) throws SQLException
     {
@@ -176,6 +219,19 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT * FROM Forums WHERE short_name='" + name + "'", resultHandler);
     }
 
+    public ForumData getForumById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<ForumData> resultHandler = new TResultHandler<ForumData>(){
+
+            public ForumData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new ForumData(result.getInt(1), result.getString(2), result.getString(3),
+                        result.getString(4));
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Forums WHERE id=" + String.valueOf(id), resultHandler);
+    }
 
     public int createForum(ForumData forum) throws SQLException
     {
@@ -213,6 +269,23 @@ public class DataService {
 
         System.out.println(vsb.toString());
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
+    }
+
+    public ThreadData getThreadById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<ThreadData> resultHandler = new TResultHandler<ThreadData>(){
+
+            public ThreadData handle(ResultSet result) throws SQLException {
+                result.next();
+                return new ThreadData(result.getInt(1), result.getInt(2), result.getInt(3),
+                        DateHelper.dateFromStr(result.getString(4)),
+                        result.getInt(5), result.getInt(6), result.getString(7), result.getInt(8), result.getString(9),
+                        result.getString(10), result.getBoolean(11), result.getBoolean(12));
+
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Threads WHERE id=" + String.valueOf(id), resultHandler);
     }
 
 }
