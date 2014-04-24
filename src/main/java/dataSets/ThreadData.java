@@ -2,6 +2,8 @@ package dataSets;
 
 import dataSets.parser.jsonDataSets.JsonThreadData;
 import org.json.simple.JSONObject;
+import utils.DateHelper;
+
 import java.util.Date;
 
 /**
@@ -155,7 +157,7 @@ public class ThreadData {
         obj.put("id", id);
         obj.put("user_id", user_id);
         obj.put("forum_id", forum_id);
-        obj.put("date", date);
+        obj.put("date", DateHelper.dateToStr(date));
         obj.put("likes", likes);
         obj.put("dislikes", dislikes);
         obj.put("message", message);

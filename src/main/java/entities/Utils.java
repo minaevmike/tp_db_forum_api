@@ -27,7 +27,7 @@ public class Utils implements EntityInterface {
         PreparedStatement ups = null;
         try {
             ups = connection.prepareStatement("select concat(\'TRUNCATE TABLE \', table_schema" +
-                    ",\'.\',TABLE_NAME,\';\') FROM INFORMATION_SCHEMA.TABLES where table_schema = \'forum_api\';");
+                    ",\'.\',TABLE_NAME,\';\') FROM INFORMATION_SCHEMA.TABLES where table_schema = \'forum\';");
             ResultSet resultSet = ups.executeQuery();
             connection.setAutoCommit(false);
             PreparedStatement FKoff = connection.prepareStatement("SET FOREIGN_KEY_CHECKS=0");

@@ -2,10 +2,9 @@ package dataSets.parser;
 
 import dataSets.parser.jsonDataSets.JsonThreadData;
 import org.json.simple.parser.ParseException;
+import utils.DateHelper;
 
 import java.io.IOException;
-import java.util.Date;
-
 /**
  * Created by Andrey
  * 21.04.14.
@@ -35,7 +34,7 @@ public class ThreadParser extends EntityParser{
                 jtData.setUser((String) value);
                 break;
             case "date":
-                jtData.setDate((Date) value);
+                jtData.setDate(DateHelper.dateFromStr((String) value));
                 break;
             case "message":
                 jtData.setMessage((String) value);

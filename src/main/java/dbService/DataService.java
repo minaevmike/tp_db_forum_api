@@ -28,7 +28,7 @@ public class DataService {
                     "jdbc:mysql://" +
                     "localhost:" +
                     "3306/" +
-                    "forum_api?" +
+                    "forum?" +
                     "user=sqadmin&" +
                     "password=sqadmin");
 

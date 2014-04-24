@@ -42,7 +42,11 @@ public class ValueStringBuilder {
     public ValueStringBuilder append(Date date)
     {
         count();
-        sb.append(date);
+        if(date == null) {
+            sb.append("NULL");
+        } else {
+            sb.append("'").append(DateHelper.dateToStr(date)).append("'");
+        }
         return this;
     }
 
