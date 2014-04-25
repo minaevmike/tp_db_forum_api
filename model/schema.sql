@@ -2,6 +2,9 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
+DROP SCHEMA IF EXISTS `forum` ;
+CREATE SCHEMA IF NOT EXISTS `forum` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci ;
+USE `forum` ;
 
 -- -----------------------------------------------------
 -- Table `forum`.`Users`
@@ -139,18 +142,19 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `thread_id` INT NOT NULL,
   `user_id` INT NOT NULL,
+  `forum_id` INT NOT NULL,
   `parent_post` INT NULL,
   `message` TEXT NOT NULL,
   `date` DATETIME NOT NULL,
   `likes` INT NOT NULL DEFAULT 0,
+  `isApproved` TINYINT(1) NULL,
   `dislikes` INT NOT NULL DEFAULT 0,
   `points` INT NOT NULL DEFAULT 0,
-  `isApproved` TINYINT(1) NULL,
   `isHighlighted` TINYINT(1) NULL,
   `isEdited` TINYINT(1) NULL,
   `isSpam` TINYINT(1) NULL,
-  `isDeeleted` TINYINT(1) NULL,
-  PRIMARY KEY (`id`, `thread_id`, `user_id`),
+  `isDeleted` TINYINT(1) NULL,
+  PRIMARY KEY (`id`, `thread_id`, `user_id`, `forum_id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_Posts_Threads1_idx` (`thread_id` ASC),
   INDEX `fk_Posts_Users1_idx` (`user_id` ASC),
