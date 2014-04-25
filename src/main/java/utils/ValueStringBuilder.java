@@ -57,6 +57,17 @@ public class ValueStringBuilder {
         return this;
     }
 
+    public ValueStringBuilder append(Long i)
+    {
+        count();
+        if(i == null) {
+            sb.append("NULL");
+        } else {
+            sb.append(i);
+        }
+        return this;
+    }
+
     public void close()
     {
         sb.append(")");

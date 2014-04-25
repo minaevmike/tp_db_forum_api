@@ -8,7 +8,7 @@ import java.util.Date;
  */
 public class JsonPostData {
 
-    Long parent_post = null;
+    private Long parent_post = null;
     private boolean isApproved = false;
     private boolean isHighlighted = false;
     private boolean isEdited = false;

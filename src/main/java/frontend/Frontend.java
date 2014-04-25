@@ -23,6 +23,7 @@ public class Frontend extends HttpServlet{
     private User user;
     private Forum forum;
     private entities.Thread thread;
+    private Post post;
     private Utils utils;
     private int counter = 0;
 
@@ -32,6 +33,8 @@ public class Frontend extends HttpServlet{
         forum = new Forum(ds);
         thread = new Thread(ds);
         utils = new Utils(ds);
+        post = new Post(ds);
+        utils.exec("clear", null);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
@@ -87,7 +90,7 @@ public class Frontend extends HttpServlet{
         case "forum":
             return forum.exec(method, content);
         case "post":
-            break;
+            return post.exec(method, content);
         case "user":
             return user.exec(method, content);
         case "thread":

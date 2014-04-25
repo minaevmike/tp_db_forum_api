@@ -2,6 +2,7 @@ package entities;
 
 import dataSets.ForumData;
 import dataSets.PostData;
+import dataSets.ThreadData;
 import dataSets.UserData;
 import dataSets.parser.ForumParser;
 import dataSets.parser.PostParser;
@@ -50,18 +51,29 @@ public class Post implements EntityInterface {
 
     private String details(String query)
     {
-        //related=['user']&forum=forumwithsufficientlylargename
+        //post=1&related=['thread', 'forum', 'user']
         String[] expressions = query.split("&");
-        boolean use_related = expressions[0].split("=")[1] == "['user']";
-        String forumName = expressions[1].split("=")[1];
+        boolean related_user = false;
+        boolean related_forum = false;
+        boolean related_thread = false;
 
+        if(expressions[1] != null) {
+            String[] values = expressions[1].split("=");
+            related_user = (values[1].indexOf("user") != -1);
+            related_forum = (values[1].indexOf("forum") != -1);
+            related_thread = (values[1].indexOf("thread") != -1);
+        }
+
+        int id = Integer.parseInt(expressions[0].split("=")[1]);
         try {
-            ForumData forumData = dataService.getForumByName(forumName);
+            PostData postData = dataService.getPostById(id);
+            JSONObject postObj = postData.toJson();
 
-            JSONObject forumObj = forumData.toJson();
+            postObj.remove("user_id");
+            postObj.remove("user_id");
 
-            if(use_related) {
-                UserData userData = dataService.getUserByMail(forumData.getUserMail());
+            if(related_user) {
+                UserData userData = dataService.getUserById(postData.getUser_id());
                 JSONObject userObj = userData.toJson();
 
                 List<String> followers = dataService.getFollowers(userData.getId());
@@ -72,11 +84,36 @@ public class Post implements EntityInterface {
                 userObj.put("followers", followers);
                 userObj.put("subscriptions", subscriptions);
 
-                forumObj.remove("user");
-                forumObj.put("user", userObj);
+                postObj.put("user", userObj);
+            }
+            else {
+                postObj.put("user", dataService.getUserMailById(postData.getUser_id()));
             }
 
-        return JsonHelper.createResponse(forumObj).toJSONString();
+
+            if(related_forum) {
+                ForumData forumData = dataService.getForumById(postData.getForum_id());
+
+                postObj.put("forum", forumData.toJson());
+            } else {
+                postObj.put("forum", dataService.getForumShortNameById(postData.getForum_id()));
+            }
+
+            if(related_thread) {
+                postObj.remove("thread");
+                ThreadData threadData = dataService.getThreadById(postData.getThread_id());
+
+                JSONObject threadObj = threadData.toJson();
+
+                threadObj.put("forum", dataService.getForumShortNameById(threadData.getForum_id()));
+                threadObj.put("posts", dataService.countThreadPosts(threadData.getId()));
+                threadObj.put("user", dataService.getUserMailById(threadData.getUser_id()));
+
+                postObj.put("thread", threadObj);
+            }
+
+
+            return JsonHelper.createResponse(postObj).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();

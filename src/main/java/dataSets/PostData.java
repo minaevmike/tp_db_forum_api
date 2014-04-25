@@ -27,6 +27,24 @@ public class PostData {
     private boolean isSpam = false;
     private boolean isDeleted = false;
 
+    public PostData(int id, int thread_id, int user_id, int forum_id, Long parent_post, String message, Date date, int likes, int dislikes, int points, boolean isApproved, boolean isHighlighted, boolean isEdited, boolean isSpam, boolean isDeleted) {
+        this.id = id;
+        this.thread_id = thread_id;
+        this.user_id = user_id;
+        this.forum_id = forum_id;
+        this.parent_post = parent_post;
+        this.message = message;
+        this.date = date;
+        this.likes = likes;
+        this.dislikes = dislikes;
+        this.points = points;
+        this.isApproved = isApproved;
+        this.isHighlighted = isHighlighted;
+        this.isEdited = isEdited;
+        this.isSpam = isSpam;
+        this.isDeleted = isDeleted;
+    }
+
     public PostData(JsonPostData jpd, int user_id, int forum_id) {
         parent_post = jpd.getParent_post();
         message = jpd.getMessage();
@@ -169,10 +187,10 @@ public class PostData {
         JSONObject obj = new JSONObject();
 
         obj.put("id", id);
-        obj.put("thread_id", thread_id);
+        obj.put("thread", thread_id);
         obj.put("user_id", user_id);
         obj.put("forum_id", forum_id);
-        obj.put("parent_post", parent_post);
+        obj.put("parent", parent_post);
         obj.put("date",DateHelper.dateToStr(date));
         obj.put("likes", likes);
         obj.put("dislikes", dislikes);

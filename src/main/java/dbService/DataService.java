@@ -1,6 +1,7 @@
 package dbService;
 
 import dataSets.ForumData;
+import dataSets.PostData;
 import dataSets.ThreadData;
 import dataSets.UserData;
 import dbService.executor.SimpleExecutor;
@@ -286,6 +287,72 @@ public class DataService {
             }
         };
         return exec.execQuery(getConnection(), "SELECT * FROM Threads WHERE id=" + String.valueOf(id), resultHandler);
+    }
+
+    public int countThreadPosts(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<Integer> resultHandler = new TResultHandler<Integer>(){
+            public Integer handle(ResultSet result) throws SQLException {
+                result.next();
+                return result.getInt(1);
+
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT COUNT(id) FROM Posts WHERE thread_id=" + String.valueOf(id), resultHandler);
+    }
+
+
+
+
+    public int createPost(PostData post) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("INSERT INTO Posts (" +
+                "`thread_id`, `user_id`, `forum_id`, `parent_post`, `message`, `date`, `likes`, `dislikes`," +
+                " `points`, `isApproved`, `isHighlighted`, `isEdited`, `isSpam`, `isDeleted`) VALUES(");
+        vsb.append(post.getThread_id())
+           .append(post.getUser_id())
+           .append(post.getForum_id())
+           .append(post.getParent_post())
+           .append(post.getMessage())
+           .append(post.getDate())
+           .append(post.getLikes())
+           .append(post.getDislikes())
+           .append(post.getPoints())
+           .append(post.isApproved())
+           .append(post.isHighlighted())
+           .append(post.isEdited())
+           .append(post.isSpam())
+           .append(post.isDeleted())
+           .close();
+
+        System.out.println(vsb.toString());
+        return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
+    }
+
+
+    public PostData getPostById(int id) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<PostData> resultHandler = new TResultHandler<PostData>(){
+
+            public PostData handle(ResultSet result) throws SQLException {
+                result.next();
+                
+                Object parentPostObj = result.getObject(5);
+                Long parentPost = null;
+                if(parentPostObj != null) {
+                    parentPost = result.getLong(5);
+                }
+                return new PostData(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4),
+                        parentPost, result.getString(6), DateHelper.dateFromStr(result.getString(7)),
+                        result.getInt(8), result.getInt(9), result.getInt(10), result.getBoolean(11),
+                        result.getBoolean(12), result.getBoolean(13), result.getBoolean(14), result.getBoolean(15));
+
+            }
+        };
+        return exec.execQuery(getConnection(), "SELECT * FROM Posts WHERE id=" + String.valueOf(id), resultHandler);
     }
 
 }
