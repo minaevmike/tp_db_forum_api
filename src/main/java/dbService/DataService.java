@@ -193,21 +193,6 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT id FROM Forums WHERE short_name='" + sName +"'", resultHandler);
     }
 
-
-    public ForumData getForumByShortName(String sName) throws SQLException
-    {
-        TExecutor exec = new TExecutor();
-        TResultHandler<ForumData> resultHandler = new TResultHandler<ForumData>(){
-
-            public ForumData handle(ResultSet result) throws SQLException {
-                result.next();
-                return new ForumData(result.getInt(1), result.getString(2), result.getString(3),
-                        result.getString(4));
-            }
-        };
-        return exec.execQuery(getConnection(), "SELECT * FROM Forums WHERE short_name='" + sName + "'", resultHandler);
-    }
-
     public ForumData getForumByName(String name) throws SQLException
     {
         TExecutor exec = new TExecutor();
@@ -319,7 +304,7 @@ public class DataService {
             }
         };
 
-        StringBuilder sb = new StringBuilder("SELECT user_id FROM Posts WHERE forum_id=");
+        StringBuilder sb = new StringBuilder("SELECT DISTINCT user_id FROM Posts WHERE forum_id=");
         sb.append(forum_id);
         if(since_id != null) {
             sb.append(" AND user_id >='").append(since_id).append("'");
@@ -466,27 +451,72 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT * FROM Posts WHERE id=" + String.valueOf(id), resultHandler);
     }
 
+    public boolean removePost(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("UPDATE Posts SET isDeleted=TRUE WHERE id=");
+        vsb.append(id);
+
+        System.out.println(vsb.toString());
+        exec.execUpdate(getConnection(), vsb.toString());
+        return true;
+    }
+
+    public boolean restorePost(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        ValueStringBuilder vsb = new ValueStringBuilder("UPDATE Posts SET isDeleted=FALSE WHERE id=");
+        vsb.append(id);
+
+        System.out.println(vsb.toString());
+        exec.execUpdate(getConnection(), vsb.toString());
+        return true;
+    }
+
+    public boolean updatePost(int id, String message) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Posts SET message='");
+        sb.append(message).append("'").append(" WHERE id=").append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+
+    public boolean votePost(int id, int vote) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Posts SET points=points");
+        if (vote == 1) {
+            sb.append("+1, likes=likes+1");
+        } else {
+            sb.append("-1, dislikes=dislikes+1");
+        }
+        sb.append(" WHERE id=").append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
 
     public JSONObject getJsonUserDetails(String mail) throws SQLException
     {
         UserData userData = getUserByMail(mail);
 
-        JSONObject obj = userData.jsonDetails(getFollowers(userData.getId()),
+        return userData.jsonDetails(getFollowers(userData.getId()),
                 getFollowing(userData.getId()),
                 getSubscriptions(userData.getId()));
-
-        return obj;
     }
 
     public JSONObject getJsonUserDetails(int id) throws SQLException
     {
         UserData userData = getUserById(id);
 
-        JSONObject obj = userData.jsonDetails(getFollowers(userData.getId()),
+        return userData.jsonDetails(getFollowers(userData.getId()),
                 getFollowing(userData.getId()),
                 getSubscriptions(userData.getId()));
-
-        return obj;
     }
 
 

@@ -1,17 +1,15 @@
 package entities;
 
-import dataSets.ForumData;
 import dataSets.PostData;
-import dataSets.ThreadData;
-import dataSets.UserData;
-import dataSets.parser.ForumParser;
 import dataSets.parser.GetRequestParser;
 import dataSets.parser.PostParser;
 import dataSets.parser.jsonDataSets.JsonPostData;
 import dbService.DataService;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import utils.JsonHelper;
 
+import javax.swing.*;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -90,7 +88,7 @@ public class Post implements EntityInterface {
 
         try {
             List<JSONObject> result = new LinkedList<>();
-            List<Integer> posts = new LinkedList<>();
+            List<Integer> posts;
             if(forum != null) {
                 int id = dataService.getForumIdByShortName(forum);
                 posts = dataService.getForumPostsIdList(id, since, order, limit);
@@ -112,6 +110,78 @@ public class Post implements EntityInterface {
         return null;
     }
 
+    private String remove(String data)
+    {
+        //post=1
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        Long id = (Long) obj.get("post");
+
+        try {
+            dataService.removePost(id.intValue());
+            JSONObject res = new JSONObject();
+
+            res.put("post", id);
+            return JsonHelper.createResponse(res).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String restore(String data)
+    {
+        //post=1
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        Long id = (Long) obj.get("post");
+
+        try {
+            dataService.restorePost(id.intValue());
+            JSONObject res = new JSONObject();
+
+            res.put("post", id);
+            return JsonHelper.createResponse(res).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    private String update(String data)
+    {
+        //post=1
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        Long id = (Long) obj.get("post");
+        String message = (String) obj.get("message");
+
+        try {
+            dataService.updatePost(id.intValue(), message);
+            return JsonHelper.createResponse(dataService.getJsonPostDetails(id.intValue(), false, false, false)).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String vote(String data)
+    {
+        //post=1
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        Long id = (Long) obj.get("post");
+        Long vote = (Long) obj.get("vote");
+
+        try {
+            dataService.votePost(id.intValue(), vote.intValue());
+            return JsonHelper.createResponse(dataService.getJsonPostDetails(id.intValue(), false, false, false)).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     @Override
     public String exec(String method, String data) {
@@ -122,6 +192,14 @@ public class Post implements EntityInterface {
                 return details(data);
             case "list":
                 return list(data);
+            case "remove":
+                return remove(data);
+            case "restore":
+                return restore(data);
+            case "update":
+                return update(data);
+            case "vote":
+                return vote(data);
         }
         return null;
     }
