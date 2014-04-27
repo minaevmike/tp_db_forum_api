@@ -289,6 +289,33 @@ public class DataService {
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
+    public List<Integer> getForumThreadsIdListByUser(int user_id, String since, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT id FROM Threads WHERE user_id=");
+        sb.append(user_id);
+        if(since != null) {
+            sb.append(" AND date >='").append(since).append("'");
+        }
+        sb.append(" ORDER BY date ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
+    }
+
 
     public List<Integer> getForumUsersIdList(int forum_id, String since_id, String order, String limit) throws SQLException
     {
@@ -398,8 +425,100 @@ public class DataService {
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
+    public boolean removeThread(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET isDeleted=TRUE WHERE id=");
+        sb.append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+    public boolean restoreThread(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET isDeleted=FALSE WHERE id=");
+        sb.append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
 
 
+    public boolean closeThread(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET isClosed=TRUE WHERE id=");
+        sb.append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+    public boolean openThread(int id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET isClosed=FALSE WHERE id=");
+        sb.append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+    public boolean updateThread(int id, String message, String slug) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET message='");
+        sb.append(message).append("', ").append("slug='").append(slug).append("'").append(" WHERE id=").append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+
+    public boolean voteThread(int id, int vote) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Threads SET points=points");
+        if (vote == 1) {
+            sb.append("+1, likes=likes+1");
+        } else {
+            sb.append("-1, dislikes=dislikes+1");
+        }
+        sb.append(" WHERE id=").append(id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+    public boolean subscribeUserToThread(int id, int user_id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("INSERT INTO Subscriptions (`user_id`, `thread_id`) VALUES (");
+        sb.append(user_id).append(",").append(id).append(")").append("ON DUPLICATE KEY UPDATE isDeleted=FALSE");
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+    public boolean unsubscribeUserToThread(int id, int user_id) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Subscriptions SET isDeleted=TRUE WHERE user_id = ");
+        sb.append(user_id);
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
 
     public int createPost(PostData post) throws SQLException
     {
