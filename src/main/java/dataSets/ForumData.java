@@ -2,6 +2,8 @@ package dataSets;
 
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 /**
  * Created by Andrey
  * 22.04.14.
@@ -64,6 +66,13 @@ public class ForumData {
         obj.put("short_name", short_name);
         obj.put("user", userMail);
 
+        return obj;
+    }
+
+    public JSONObject jsonDetails(JSONObject userDetails)
+    {
+        JSONObject obj = this.toJson();
+        obj.put("user", userDetails);
         return obj;
     }
 }

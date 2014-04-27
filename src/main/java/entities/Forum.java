@@ -1,21 +1,23 @@
 package entities;
 
 import dataSets.ForumData;
-import dataSets.UserData;
 import dataSets.parser.ForumParser;
+import dataSets.parser.GetRequestParser;
 import dbService.DataService;
 import org.json.simple.JSONObject;
 import utils.JsonHelper;
 
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
 
 /**
- * Created by Andrey on 22.04.14.
+ * Created by Andrey
+ * 22.04.14.
  */
 public class Forum implements EntityInterface {
 
     DataService dataService;
+    GetRequestParser GETParser= new GetRequestParser();
 
     public Forum(DataService dataService)
     {
@@ -43,32 +45,48 @@ public class Forum implements EntityInterface {
     private String details(String query)
     {
         //related=['user']&forum=forumwithsufficientlylargename
-        String[] expressions = query.split("&");
-        boolean use_related = expressions[0].split("=")[1] == "['user']";
-        String forumName = expressions[1].split("=")[1];
+        GETParser.parse(query);
+        String forumName = GETParser.getValue("forum");
+        boolean use_related = GETParser.checkRelated("user");
 
         try {
-            ForumData forumData = dataService.getForumByName(forumName);
+            return JsonHelper.createResponse(dataService.getJsonForumDetails(forumName, use_related)).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
-            JSONObject forumObj = forumData.toJson();
 
-            if(use_related) {
-                UserData userData = dataService.getUserByMail(forumData.getUserMail());
-                JSONObject userObj = userData.toJson();
+    private String listPosts(String query)
+    {
+        //related=['thread']&since=2014-01-02 00:00:00&limit=2&order=asc&forum=forumwithsufficientlylargename
+        GETParser.parse(query);
 
-                List<String> followers = dataService.getFollowers(userData.getId());
-                List<String> following = dataService.getFollowing(userData.getId());
-                List<String> subscriptions = dataService.getSubscriptions(userData.getId());
+        boolean related_user = GETParser.checkRelated("user");
+        boolean related_thread = GETParser.checkRelated("thread");
+        boolean related_forum = GETParser.checkRelated("forum");
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since = GETParser.getValue("since");
 
-                userObj.put("following", following);
-                userObj.put("followers", followers);
-                userObj.put("subscriptions", subscriptions);
 
-                forumObj.remove("user");
-                forumObj.put("user", userObj);
+        String forum = GETParser.getValue("forum");
+
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            int id = dataService.getForumIdByShortName(forum);
+            List<Integer> posts = dataService.getForumPostsIdList(id, since, order, limit);
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonPostDetails(postsIterator.next(), related_user, related_thread, related_forum));
             }
-
-        return JsonHelper.createResponse(forumObj).toJSONString();
+            return  JsonHelper.createArrayResponse(result).toJSONString();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -77,6 +95,9 @@ public class Forum implements EntityInterface {
         return null;
     }
 
+
+
+
     @Override
     public String exec(String method, String data) {
         switch (method) {
@@ -84,6 +105,8 @@ public class Forum implements EntityInterface {
                 return create(data);
             case "details":
                 return details(data);
+            case "listPosts":
+                return listPosts(data);
         }
         return null;
     }

@@ -7,7 +7,9 @@ import dataSets.UserData;
 import dbService.executor.SimpleExecutor;
 import dbService.executor.TExecutor;
 import dbService.handlers.TResultHandler;
+import org.json.simple.JSONObject;
 import utils.DateHelper;
+import utils.JsonHelper;
 import utils.ValueStringBuilder;
 
 import java.sql.*;
@@ -248,6 +250,59 @@ public class DataService {
     }
 
 
+    public List<Integer> getForumPostsIdList(int forum_id, String since, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT id FROM Posts WHERE forum_id=");
+        sb.append(forum_id);
+        if(since != null) {
+            sb.append(" AND date >='").append(since).append("'");
+        }
+        sb.append(" ORDER BY date ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
+    }
+
+    public List<Integer> getForumThreadsIdList(int forum_id, String since, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT id FROM Threads WHERE forum_id=");
+        sb.append(forum_id);
+        if(since != null) {
+            sb.append(" AND date >='").append(since).append("'");
+        }
+        sb.append(" ORDER BY date ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
+    }
 
 
     public int createThread(ThreadData thread) throws SQLException
@@ -331,29 +386,136 @@ public class DataService {
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
+    private PostData makePostData(ResultSet result) throws SQLException {
+        Object parentPostObj = result.getObject(5);
+        Long parentPost = null;
+        if(parentPostObj != null) {
+            parentPost = result.getLong(5);
+        }
+        return new PostData(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4),
+                parentPost, result.getString(6), DateHelper.dateFromStr(result.getString(7)),
+                result.getInt(8), result.getInt(9), result.getInt(10), result.getBoolean(11),
+                result.getBoolean(12), result.getBoolean(13), result.getBoolean(14), result.getBoolean(15));
+    }
 
     public PostData getPostById(int id) throws SQLException
     {
         TExecutor exec = new TExecutor();
         TResultHandler<PostData> resultHandler = new TResultHandler<PostData>(){
-
             public PostData handle(ResultSet result) throws SQLException {
                 result.next();
-                
-                Object parentPostObj = result.getObject(5);
-                Long parentPost = null;
-                if(parentPostObj != null) {
-                    parentPost = result.getLong(5);
-                }
-                return new PostData(result.getInt(1), result.getInt(2), result.getInt(3), result.getInt(4),
-                        parentPost, result.getString(6), DateHelper.dateFromStr(result.getString(7)),
-                        result.getInt(8), result.getInt(9), result.getInt(10), result.getBoolean(11),
-                        result.getBoolean(12), result.getBoolean(13), result.getBoolean(14), result.getBoolean(15));
-
+                return makePostData(result);
             }
         };
         return exec.execQuery(getConnection(), "SELECT * FROM Posts WHERE id=" + String.valueOf(id), resultHandler);
     }
+
+
+    public JSONObject getJsonUserDetails(String mail) throws SQLException
+    {
+        UserData userData = getUserByMail(mail);
+
+        JSONObject obj = userData.jsonDetails(getFollowers(userData.getId()),
+                getFollowing(userData.getId()),
+                getSubscriptions(userData.getId()));
+
+        return obj;
+    }
+
+    public JSONObject getJsonUserDetails(int id) throws SQLException
+    {
+        UserData userData = getUserById(id);
+
+        JSONObject obj = userData.jsonDetails(getFollowers(userData.getId()),
+                getFollowing(userData.getId()),
+                getSubscriptions(userData.getId()));
+
+        return obj;
+    }
+
+
+    public JSONObject getJsonThreadDetails(int id, boolean related_user, boolean related_forum) throws SQLException
+    {
+        ThreadData threadData = getThreadById(id);
+
+        JSONObject threadObj = threadData.toJson();
+        threadObj.remove("user_id");
+        threadObj.remove("forum_id");
+
+        threadObj.put("posts", countThreadPosts(threadData.getId()));
+
+        if(related_user) {
+            threadObj.put("user", getJsonUserDetails(threadData.getUser_id()));
+        }
+        else {
+            threadObj.put("user", getUserMailById(threadData.getUser_id()));
+        }
+
+        if(related_forum) {
+            threadObj.put("forum", getJsonForumDetails(threadData.getForum_id(), false));
+        } else {
+            threadObj.put("forum", getForumShortNameById(threadData.getForum_id()));
+        }
+        return threadObj;
+    }
+
+    public JSONObject getJsonForumDetails(String name, boolean related_user) throws SQLException
+    {
+        ForumData forumData = getForumByName(name);
+        JSONObject forumObj = forumData.toJson();
+
+        if(related_user) {
+            JSONObject userObj = getJsonUserDetails(forumData.getUserMail());
+            forumObj.remove("user");
+            forumObj.put("user", userObj);
+        }
+
+        return forumObj;
+    }
+
+    public JSONObject getJsonForumDetails(int id, boolean related_user) throws SQLException
+    {
+        ForumData forumData = getForumById(id);
+        JSONObject forumObj = forumData.toJson();
+
+        if(related_user) {
+            JSONObject userObj = getJsonUserDetails(forumData.getUserMail());
+            forumObj.remove("user");
+            forumObj.put("user", userObj);
+        }
+
+        return forumObj;
+    }
+
+
+    public JSONObject getJsonPostDetails(int id, boolean related_user, boolean related_thread , boolean related_forum) throws SQLException
+    {
+        PostData postData = getPostById(id);
+        JSONObject postObj = postData.toJson();
+
+        postObj.remove("user_id");
+        postObj.remove("forum_id");
+
+        if(related_user) {
+            postObj.put("user", getJsonUserDetails(postData.getUser_id()));
+        } else {
+            postObj.put("user", getUserMailById(postData.getUser_id()));
+        }
+
+        if(related_forum) {
+            postObj.put("forum", getJsonForumDetails(postData.getForum_id(), false));
+        } else {
+            postObj.put("forum",getForumShortNameById(postData.getForum_id()));
+        }
+
+        if(related_thread) {
+            postObj.remove("thread");
+            postObj.put("thread", getJsonThreadDetails(postData.getThread_id(), false, false));
+        }
+
+        return postObj;
+    }
+
 
 }
 

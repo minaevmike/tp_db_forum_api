@@ -43,18 +43,7 @@ public class User implements EntityInterface {
     {
         String[] pairs = query.split("=");
         try {
-            UserData userData = dataService.getUserByMail(pairs[1]);
-            List<String> followers = dataService.getFollowers(userData.getId());
-            List<String> following = dataService.getFollowing(userData.getId());
-            List<String> subscriptions = dataService.getSubscriptions(userData.getId());
-
-            JSONObject obj = userData.toJson();
-            obj.put("following", following);
-            obj.put("followers", followers);
-            obj.put("subscriptions", subscriptions);
-
-            return JsonHelper.createResponse(obj).toJSONString();
-
+            return JsonHelper.createResponse(dataService.getJsonUserDetails(pairs[1])).toJSONString();
         } catch (SQLException e) {
             e.printStackTrace();
         }

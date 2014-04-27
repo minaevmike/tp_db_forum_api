@@ -5,6 +5,7 @@ import dataSets.PostData;
 import dataSets.ThreadData;
 import dataSets.UserData;
 import dataSets.parser.ForumParser;
+import dataSets.parser.GetRequestParser;
 import dataSets.parser.PostParser;
 import dataSets.parser.jsonDataSets.JsonPostData;
 import dbService.DataService;
@@ -20,6 +21,7 @@ import java.util.List;
 public class Post implements EntityInterface {
 
     DataService dataService;
+    GetRequestParser GETParser= new GetRequestParser();
 
     public Post(DataService dataService)
     {
@@ -52,69 +54,14 @@ public class Post implements EntityInterface {
     private String details(String query)
     {
         //post=1&related=['thread', 'forum', 'user']
-        String[] expressions = query.split("&");
-        boolean related_user = false;
-        boolean related_forum = false;
-        boolean related_thread = false;
+        GETParser.parse(query);
+        boolean related_user = GETParser.checkRelated("user");
+        boolean related_forum = GETParser.checkRelated("forum");
+        boolean related_thread = GETParser.checkRelated("thread");
+        int id = Integer.parseInt(GETParser.getValue("post"));
 
-        if(expressions[1] != null) {
-            String[] values = expressions[1].split("=");
-            related_user = (values[1].indexOf("user") != -1);
-            related_forum = (values[1].indexOf("forum") != -1);
-            related_thread = (values[1].indexOf("thread") != -1);
-        }
-
-        int id = Integer.parseInt(expressions[0].split("=")[1]);
         try {
-            PostData postData = dataService.getPostById(id);
-            JSONObject postObj = postData.toJson();
-
-            postObj.remove("user_id");
-            postObj.remove("user_id");
-
-            if(related_user) {
-                UserData userData = dataService.getUserById(postData.getUser_id());
-                JSONObject userObj = userData.toJson();
-
-                List<String> followers = dataService.getFollowers(userData.getId());
-                List<String> following = dataService.getFollowing(userData.getId());
-                List<String> subscriptions = dataService.getSubscriptions(userData.getId());
-
-                userObj.put("following", following);
-                userObj.put("followers", followers);
-                userObj.put("subscriptions", subscriptions);
-
-                postObj.put("user", userObj);
-            }
-            else {
-                postObj.put("user", dataService.getUserMailById(postData.getUser_id()));
-            }
-
-
-            if(related_forum) {
-                ForumData forumData = dataService.getForumById(postData.getForum_id());
-
-                postObj.put("forum", forumData.toJson());
-            } else {
-                postObj.put("forum", dataService.getForumShortNameById(postData.getForum_id()));
-            }
-
-            if(related_thread) {
-                postObj.remove("thread");
-                ThreadData threadData = dataService.getThreadById(postData.getThread_id());
-
-                JSONObject threadObj = threadData.toJson();
-
-                threadObj.put("forum", dataService.getForumShortNameById(threadData.getForum_id()));
-                threadObj.put("posts", dataService.countThreadPosts(threadData.getId()));
-                threadObj.put("user", dataService.getUserMailById(threadData.getUser_id()));
-
-                postObj.put("thread", threadObj);
-            }
-
-
-            return JsonHelper.createResponse(postObj).toJSONString();
-
+            return JsonHelper.createResponse(dataService.getJsonPostDetails(id, related_user, related_thread, related_forum)).toJSONString();
         } catch (SQLException e) {
             e.printStackTrace();
         }

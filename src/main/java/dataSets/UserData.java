@@ -2,6 +2,8 @@ package dataSets;
 
 import org.json.simple.JSONObject;
 
+import java.util.List;
+
 /**
  * Created by Andrey
  * 21.04.14.
@@ -88,6 +90,15 @@ public class UserData {
         obj.put("email", mail);
         obj.put("id", id);
 
+        return obj;
+    }
+
+    public JSONObject jsonDetails(List<String> followers, List<String> following, List<String> subscriptions)
+    {
+        JSONObject obj = this.toJson();
+        obj.put("following", following);
+        obj.put("followers", followers);
+        obj.put("subscriptions", subscriptions);
         return obj;
     }
 }

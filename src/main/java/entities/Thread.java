@@ -3,6 +3,7 @@ package entities;
 import dataSets.ForumData;
 import dataSets.ThreadData;
 import dataSets.UserData;
+import dataSets.parser.GetRequestParser;
 import dataSets.parser.ThreadParser;
 import dbService.DataService;
 import org.json.simple.JSONObject;
@@ -18,6 +19,7 @@ import java.util.List;
 public class Thread implements EntityInterface {
 
     DataService dataService;
+    GetRequestParser GETParser= new GetRequestParser();
 
     public Thread(DataService dataService)
     {
@@ -47,59 +49,27 @@ public class Thread implements EntityInterface {
     private String details(String query)
     {
         //related=['forum', 'user']&thread=1
-        String[] expressions = query.split("&");
-        boolean related_user = false;
-        boolean related_forum = false;
-
-        if(expressions[0] != null) {
-            String[] values = expressions[0].split("=");
-            related_user = (values[1].indexOf("user") != -1);
-            related_forum = (values[1].indexOf("forum") != -1);
-        }
-
-        int id = Integer.parseInt(expressions[1].split("=")[1]);
+        GETParser.parse(query);
+        boolean related_user = GETParser.checkRelated("user");
+        boolean related_forum = GETParser.checkRelated("forum");
+        int id = Integer.parseInt(GETParser.getValue("thread"));
 
         try {
-            ThreadData threadData = dataService.getThreadById(id);
-
-            JSONObject threadObj = threadData.toJson();
-            threadObj.remove("user_id");
-            threadObj.remove("forum_id");
-
-            if(related_user) {
-                UserData userData = dataService.getUserById(threadData.getUser_id());
-                JSONObject userObj = userData.toJson();
-
-                List<String> followers = dataService.getFollowers(userData.getId());
-                List<String> following = dataService.getFollowing(userData.getId());
-                List<String> subscriptions = dataService.getSubscriptions(userData.getId());
-
-                userObj.put("following", following);
-                userObj.put("followers", followers);
-                userObj.put("subscriptions", subscriptions);
-
-                threadObj.put("user", userObj);
-            }
-            else {
-                threadObj.put("user", dataService.getUserMailById(threadData.getUser_id()));
-            }
-
-            if(related_forum) {
-                ForumData forumData = dataService.getForumById(threadData.getForum_id());
-
-                threadObj.put("forum", forumData.toJson());
-            } else {
-                threadObj.put("forum", dataService.getForumShortNameById(threadData.getForum_id()));
-            }
-
-        return JsonHelper.createResponse(threadObj).toJSONString();
-
+            return JsonHelper.createResponse(dataService.getJsonThreadDetails(id, related_user, related_forum )).toJSONString();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
     }
+
+
+
+    private String listPosts(String query)
+    {
+        return null;
+    }
+
 
     @Override
     public String exec(String method, String data) {
@@ -108,6 +78,8 @@ public class Thread implements EntityInterface {
                 return create(data);
             case "details":
                 return details(data);
+            case "listPosts":
+                return listPosts(data);
         }
         return null;
     }
