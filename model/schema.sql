@@ -113,11 +113,10 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `forum`.`Subscriptions` ;
 
 CREATE TABLE IF NOT EXISTS `forum`.`Subscriptions` (
-  `id` INT NOT NULL AUTO_INCREMENT,
   `user_id` INT NOT NULL,
-  `thread_id` INT NULL,
-  PRIMARY KEY (`id`, `user_id`, `thread_id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  `thread_id` INT NOT NULL,
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`user_id`, `thread_id`),
   INDEX `fk_Subscriprions_Users1_idx` (`user_id` ASC),
   INDEX `fk_Subscriprions_Threads1_idx` (`thread_id` ASC),
   CONSTRAINT `fk_Subscriprions_Users1`
@@ -147,9 +146,9 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   `message` TEXT NOT NULL,
   `date` DATETIME NOT NULL,
   `likes` INT NOT NULL DEFAULT 0,
-  `isApproved` TINYINT(1) NULL,
   `dislikes` INT NOT NULL DEFAULT 0,
   `points` INT NOT NULL DEFAULT 0,
+  `isApproved` TINYINT(1) NULL,
   `isHighlighted` TINYINT(1) NULL,
   `isEdited` TINYINT(1) NULL,
   `isSpam` TINYINT(1) NULL,
@@ -159,6 +158,7 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   INDEX `fk_Posts_Threads1_idx` (`thread_id` ASC),
   INDEX `fk_Posts_Users1_idx` (`user_id` ASC),
   INDEX `fk_Posts_Posts1_idx` (`parent_post` ASC),
+  INDEX `fk_Posts_Forums1_idx` (`forum_id` ASC),
   CONSTRAINT `fk_Posts_Threads1`
     FOREIGN KEY (`thread_id`)
     REFERENCES `forum`.`Threads` (`id`)
@@ -172,6 +172,11 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   CONSTRAINT `fk_Posts_Posts1`
     FOREIGN KEY (`parent_post`)
     REFERENCES `forum`.`Posts` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Posts_Forums1`
+    FOREIGN KEY (`forum_id`)
+    REFERENCES `forum`.`Forums` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
