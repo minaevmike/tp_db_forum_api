@@ -305,6 +305,34 @@ public class DataService {
     }
 
 
+    public List<Integer> getForumUsersIdList(int forum_id, String since_id, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT user_id FROM Posts WHERE forum_id=");
+        sb.append(forum_id);
+        if(since_id != null) {
+            sb.append(" AND user_id >='").append(since_id).append("'");
+        }
+        sb.append(" ORDER BY user_id ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
+    }
+
+
     public int createThread(ThreadData thread) throws SQLException
     {
         SimpleExecutor exec = new SimpleExecutor();
@@ -355,6 +383,34 @@ public class DataService {
             }
         };
         return exec.execQuery(getConnection(), "SELECT COUNT(id) FROM Posts WHERE thread_id=" + String.valueOf(id), resultHandler);
+    }
+
+
+    public List<Integer> getThreadPostsIdList(int thread_id, String since, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT id FROM Posts WHERE thread_id=");
+        sb.append(thread_id);
+        if(since != null) {
+            sb.append(" AND date >='").append(since).append("'");
+        }
+        sb.append(" ORDER BY date ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
 

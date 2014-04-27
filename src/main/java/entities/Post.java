@@ -13,6 +13,8 @@ import org.json.simple.JSONObject;
 import utils.JsonHelper;
 
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -69,6 +71,48 @@ public class Post implements EntityInterface {
         return null;
     }
 
+
+    private String list(String query)
+    {
+        //since=2014-01-02 00:00:00&limit=2&order=asc&forum=forumwithsufficientlylargename
+        GETParser.parse(query);
+
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since = GETParser.getValue("since");
+
+
+        String forum = GETParser.getValue("forum");
+        String thread = GETParser.getValue("thread");
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            List<Integer> posts = new LinkedList<>();
+            if(forum != null) {
+                int id = dataService.getForumIdByShortName(forum);
+                posts = dataService.getForumPostsIdList(id, since, order, limit);
+            } else {
+                int id = Integer.parseInt(thread);
+                posts = dataService.getThreadPostsIdList(id, since, order, limit);
+            }
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonPostDetails(postsIterator.next(), false, false, false));
+            }
+            return  JsonHelper.createArrayResponse(result).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     @Override
     public String exec(String method, String data) {
         switch (method) {
@@ -76,6 +120,8 @@ public class Post implements EntityInterface {
                 return create(data);
             case "details":
                 return details(data);
+            case "list":
+                return list(data);
         }
         return null;
     }

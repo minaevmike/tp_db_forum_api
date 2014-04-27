@@ -95,8 +95,75 @@ public class Forum implements EntityInterface {
         return null;
     }
 
+    private String listThreads(String query)
+    {
+        //related=['forum', 'user']&since=2013-12-30 00:00:00&limit=2&order=asc&forum=forumwithsufficientlylargename
+        GETParser.parse(query);
+
+        boolean related_user = GETParser.checkRelated("user");
+        boolean related_forum = GETParser.checkRelated("forum");
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since = GETParser.getValue("since");
 
 
+        String forum = GETParser.getValue("forum");
+
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            int id = dataService.getForumIdByShortName(forum);
+            List<Integer> posts = dataService.getForumThreadsIdList(id, since, order, limit);
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonThreadDetails(postsIterator.next(), related_user, related_forum));
+            }
+            return  JsonHelper.createArrayResponse(result).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    private String listUsers(String query)
+    {
+        //related=['forum', 'user']&since=2013-12-30 00:00:00&limit=2&order=asc&forum=forumwithsufficientlylargename
+        GETParser.parse(query);
+
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since_id = GETParser.getValue("since_id");
+
+
+        String forum = GETParser.getValue("forum");
+
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            int id = dataService.getForumIdByShortName(forum);
+            List<Integer> posts = dataService.getForumUsersIdList(id, since_id, order, limit);
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonUserDetails(postsIterator.next()));
+            }
+            return  JsonHelper.createArrayResponse(result).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
     @Override
     public String exec(String method, String data) {
@@ -107,6 +174,10 @@ public class Forum implements EntityInterface {
                 return details(data);
             case "listPosts":
                 return listPosts(data);
+            case "listThreads":
+                return listThreads(data);
+            case "listUsers":
+                return listUsers(data);
         }
         return null;
     }
