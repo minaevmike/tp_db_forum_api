@@ -106,6 +106,26 @@ public class User implements EntityInterface {
     }
 
 
+    private String follow(String data)
+    {
+        // {'follower': 'example@mail.ru', 'followee': 'example3@mail.ru'}
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        String follower = (String) obj.get("follower");
+        String followee = (String) obj.get("followee");
+
+        try {
+            int user = dataService.getUserIdByMail(follower);
+            int follow = dataService.getUserIdByMail(followee);
+            dataService.followUser(user, follow);
+            return JsonHelper.createResponse(dataService.getJsonUserDetails(user)).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     @Override
     public String exec(String method, String data) {
         switch (method) {
@@ -117,6 +137,8 @@ public class User implements EntityInterface {
             return listPosts(data);
         case "updateProfile":
             return updateProfile(data);
+        case "follow":
+            return follow(data);
         }
         return null;
     }

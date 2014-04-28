@@ -93,7 +93,7 @@ public class UserData {
         return obj;
     }
 
-    public JSONObject jsonDetails(List<Integer> followers, List<Integer> following, List<Integer> subscriptions)
+    public JSONObject jsonDetails(List<String> followers, List<String> following, List<Integer> subscriptions)
     {
         JSONObject obj = this.toJson();
         obj.put("following", following);
