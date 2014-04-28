@@ -577,7 +577,7 @@ public class DataService {
     {
         SimpleExecutor exec = new SimpleExecutor();
         StringBuilder sb = new StringBuilder("UPDATE Subscriptions SET isDeleted=TRUE WHERE user_id = ");
-        sb.append(user_id);
+        sb.append(user_id).append(" AND thread_id=").append(id);
 
         System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
