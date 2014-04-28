@@ -101,7 +101,7 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT * FROM Users WHERE id=" + String.valueOf(id), resultHandler);
     }
 
-    public List<String> getFollowers(int id) throws SQLException {
+    public List<String> getFollowing(int id) throws SQLException {
         TExecutor exec = new TExecutor();
         TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
 
@@ -118,7 +118,7 @@ public class DataService {
                 "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.isDeleted=FALSE AND f.user=" + String.valueOf(id), resultHandler);
     }
 
-    public List<String> getFollowing(int id) throws SQLException {
+    public List<String> getFollowers(int id) throws SQLException {
         TExecutor exec = new TExecutor();
         TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
 
