@@ -167,6 +167,47 @@ public class DataService {
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
+    public List<Integer> getUserPostsIdList(int user_id, String since, String order, String limit) throws SQLException
+    {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+
+        StringBuilder sb = new StringBuilder("SELECT id FROM Posts WHERE user_id=");
+        sb.append(user_id);
+        if(since != null) {
+            sb.append(" AND date >='").append(since).append("'");
+        }
+        sb.append(" ORDER BY date ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(), sb.toString(), resultHandler);
+    }
+
+    public boolean updateUser(String mail, String name, String about) throws SQLException
+    {
+        SimpleExecutor exec = new SimpleExecutor();
+        StringBuilder sb = new StringBuilder("UPDATE Users SET name='");
+        sb.append(name).append("', ").append("about='").append(about).append("'")
+                .append(" WHERE mail=").append("'").append(mail).append("'");
+
+        System.out.println(sb.toString());
+        exec.execUpdate(getConnection(), sb.toString());
+        return true;
+    }
+
+
+
     public String getForumShortNameById(int id) throws SQLException
     {
         TExecutor exec = new TExecutor();
