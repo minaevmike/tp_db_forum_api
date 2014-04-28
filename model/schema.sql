@@ -52,13 +52,13 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `forum`.`Follows` ;
 
 CREATE TABLE IF NOT EXISTS `forum`.`Follows` (
-  `id` INT NOT NULL AUTO_INCREMENT,
   `user` INT NOT NULL,
   `follow` INT NULL,
-  PRIMARY KEY (`id`, `user`, `follow`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT FALSE,
+  PRIMARY KEY (`user`, `follow`),
   INDEX `fk_Follows_Users_idx` (`user` ASC),
   INDEX `fk_Follows_Users1_idx` (`follow` ASC),
+  UNIQUE INDEX `userToFollowing` (`user` ASC, `follow` ASC),
   CONSTRAINT `fk_Follows_Users`
     FOREIGN KEY (`user`)
     REFERENCES `forum`.`Users` (`id`)
@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS `forum`.`Subscriptions` (
   PRIMARY KEY (`user_id`, `thread_id`),
   INDEX `fk_Subscriprions_Users1_idx` (`user_id` ASC),
   INDEX `fk_Subscriprions_Threads1_idx` (`thread_id` ASC),
+  UNIQUE INDEX `subscription` (`user_id` ASC, `thread_id` ASC),
   CONSTRAINT `fk_Subscriprions_Users1`
     FOREIGN KEY (`user_id`)
     REFERENCES `forum`.`Users` (`id`)
