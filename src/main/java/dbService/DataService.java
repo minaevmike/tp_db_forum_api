@@ -101,14 +101,14 @@ public class DataService {
         return exec.execQuery(getConnection(), "SELECT * FROM Users WHERE id=" + String.valueOf(id), resultHandler);
     }
 
-    public List<String> getFollowers(int id) throws SQLException {
+    public List<Integer> getFollowers(int id) throws SQLException {
         TExecutor exec = new TExecutor();
-        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
 
-            public List<String> handle(ResultSet result) throws SQLException {
-                List<String> list= new LinkedList<>();
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
                 while(result.next()) {
-                    list.add(result.getString(1));
+                    list.add(result.getInt(1));
                 }
                 return list;
             }
@@ -118,14 +118,14 @@ public class DataService {
                 "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.user=" + String.valueOf(id), resultHandler);
     }
 
-    public List<String> getFollowing(int id) throws SQLException {
+    public List<Integer> getFollowing(int id) throws SQLException {
         TExecutor exec = new TExecutor();
-        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
 
-            public List<String> handle(ResultSet result) throws SQLException {
-                List<String> list= new LinkedList<>();
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
                 while(result.next()) {
-                    list.add(result.getString(1));
+                    list.add(result.getInt(1));
                 }
                 return list;
             }
@@ -135,14 +135,14 @@ public class DataService {
                 "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.follow=" + String.valueOf(id), resultHandler);
     }
 
-    public List<String> getSubscriptions(int id) throws SQLException {
+    public List<Integer> getSubscriptions(int id) throws SQLException {
         TExecutor exec = new TExecutor();
-        TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
 
-            public List<String> handle(ResultSet result) throws SQLException {
-                List<String> list= new LinkedList<>();
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
                 while(result.next()) {
-                    list.add(result.getString(1));
+                    list.add(result.getInt(1));
                 }
                 return list;
             }
