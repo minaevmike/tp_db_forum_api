@@ -118,6 +118,33 @@ public class DataService {
                 "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.follow WHERE f.isDeleted=FALSE AND f.user=" + String.valueOf(id), resultHandler);
     }
 
+    public List<Integer> getFollowing(int id, String since_id, String order, String limit) throws SQLException {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+        StringBuilder sb = new StringBuilder("SELECT f.follow FROM Follows f JOIN Users u ON u.id=f.user WHERE isDeleted=FALSE");
+        sb.append(" AND f.user=").append(id);
+        if(since_id != null) {
+            sb.append(" AND f.follow >=").append(since_id);
+        }
+        sb.append(" ORDER BY u.name ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(),
+                sb.toString(), resultHandler);
+    }
+
+
     public List<String> getFollowers(int id) throws SQLException {
         TExecutor exec = new TExecutor();
         TResultHandler<List<String>> resultHandler = new TResultHandler<List<String>>(){
@@ -134,6 +161,33 @@ public class DataService {
         return exec.execQuery(getConnection(),
                 "SELECT u.mail FROM Follows f JOIN Users u ON u.id=f.user WHERE f.isDeleted=FALSE AND f.follow=" + String.valueOf(id), resultHandler);
     }
+
+    public List<Integer> getFollowers(int id, String since_id, String order, String limit) throws SQLException {
+        TExecutor exec = new TExecutor();
+        TResultHandler<List<Integer>> resultHandler = new TResultHandler<List<Integer>>(){
+
+            public List<Integer> handle(ResultSet result) throws SQLException {
+                List<Integer> list= new LinkedList<>();
+                while(result.next()) {
+                    list.add(result.getInt(1));
+                }
+                return list;
+            }
+        };
+        StringBuilder sb = new StringBuilder("SELECT f.user FROM Follows f JOIN Users u ON u.id=f.user WHERE isDeleted=FALSE");
+        sb.append(" AND f.follow=").append(id);
+        if(since_id != null) {
+            sb.append(" AND f.user >=").append(since_id);
+        }
+        sb.append(" ORDER BY u.name ").append(order);
+        if (limit != null) {
+            sb.append(" LIMIT ").append(limit);
+        }
+        System.out.println(sb.toString());
+        return exec.execQuery(getConnection(),
+                sb.toString(), resultHandler);
+    }
+
 
     public List<Integer> getSubscriptions(int id) throws SQLException {
         TExecutor exec = new TExecutor();

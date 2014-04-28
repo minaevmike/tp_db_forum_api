@@ -125,6 +125,91 @@ public class User implements EntityInterface {
         return null;
     }
 
+    private String unfollow(String data)
+    {
+        // {'follower': 'example@mail.ru', 'followee': 'example3@mail.ru'}
+        JSONObject obj =(JSONObject)JSONValue.parse(data);
+        String follower = (String) obj.get("follower");
+        String followee = (String) obj.get("followee");
+
+        try {
+            int user = dataService.getUserIdByMail(follower);
+            int follow = dataService.getUserIdByMail(followee);
+            dataService.unfollowUser(user, follow);
+            return JsonHelper.createResponse(dataService.getJsonUserDetails(user)).toJSONString();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    private String listFollowing(String query)
+    {
+        GETParser.parse(query);
+
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since_id = GETParser.getValue("since_id");
+
+        String user = GETParser.getValue("user");
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            int id = dataService.getUserIdByMail(user);
+            List<Integer> posts = dataService.getFollowing(id, since_id, order, limit);
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonUserDetails(postsIterator.next()));
+            }
+            return  JsonHelper.createArrayResponse(result).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    private String listFollowers(String query)
+    {
+        GETParser.parse(query);
+
+        String limit = GETParser.getValue("limit");
+        String order = GETParser.getValue("order");
+        if( order == null) {
+            order = "DESC";
+        }
+        String since_id = GETParser.getValue("since_id");
+
+        String user = GETParser.getValue("user");
+
+        try {
+            List<JSONObject> result = new LinkedList<>();
+            int id = dataService.getUserIdByMail(user);
+            List<Integer> posts = dataService.getFollowers(id, since_id, order, limit);
+            Iterator<Integer> postsIterator = posts.iterator();
+
+            while (postsIterator.hasNext()) {
+                result.add(dataService.getJsonUserDetails(postsIterator.next()));
+            }
+            return  JsonHelper.createArrayResponse(result).toJSONString();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+
 
     @Override
     public String exec(String method, String data) {
@@ -139,6 +224,12 @@ public class User implements EntityInterface {
             return updateProfile(data);
         case "follow":
             return follow(data);
+        case "unfollow":
+            return unfollow(data);
+        case "listFollowing":
+            return listFollowing(data);
+        case "listFollowers":
+            return listFollowers(data);
         }
         return null;
     }
