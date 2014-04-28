@@ -114,18 +114,18 @@ public class Thread implements EntityInterface {
 
         try {
             List<JSONObject> result = new LinkedList<>();
-            List<Integer> posts;
+            List<Integer> threads;
             if(forum != null) {
                 int id = dataService.getForumIdByShortName(forum);
-                posts = dataService.getForumThreadsIdList(id, since, order, limit);
+                threads = dataService.getForumThreadsIdList(id, since, order, limit);
             } else {
                 int id = dataService.getUserIdByMail(user);
-                posts = dataService.getForumThreadsIdListByUser(id, since, order, limit);
+                threads = dataService.getForumThreadsIdListByUser(id, since, order, limit);
             }
-            Iterator<Integer> postsIterator = posts.iterator();
+            Iterator<Integer> threadsIterator = threads.iterator();
 
-            while (postsIterator.hasNext()) {
-                result.add(dataService.getJsonPostDetails(postsIterator.next(), false, false, false));
+            while (threadsIterator.hasNext()) {
+                result.add(dataService.getJsonThreadDetails(threadsIterator.next(), false, false));
             }
             return  JsonHelper.createArrayResponse(result).toJSONString();
 
