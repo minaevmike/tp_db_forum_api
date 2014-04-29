@@ -17,7 +17,7 @@ from doc_conf import DISCR
 
 #CONFIG_PATH = '/usr/local/etc/test.conf'
 settings = {
-	'url': 'http://localhost:8080/'
+	'url': 'http://localhost:80/'
 }
 
 class TestLog(object):
