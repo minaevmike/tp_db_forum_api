@@ -209,8 +209,6 @@ public class User implements EntityInterface {
     }
 
 
-
-
     @Override
     public String exec(String method, String data) {
         switch (method) {
