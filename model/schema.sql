@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS `forum`.`Users` (
   `about` VARCHAR(128) NULL,
   PRIMARY KEY (`id`, `mail`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
-  UNIQUE INDEX `mail_UNIQUE` (`mail` ASC))
+  UNIQUE INDEX `mail_UNIQUE` (`mail` ASC),
+  INDEX `reverse` (`mail` ASC, `id` ASC))
 ENGINE = InnoDB;
 
 
