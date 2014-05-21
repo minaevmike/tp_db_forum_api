@@ -48,6 +48,9 @@ public class Frontend extends HttpServlet{
         if(request.getQueryString() != null) {
             decodedQuery = URLDecoder.decode(request.getQueryString(), "UTF-8");
         }
+        if((tokens.length >= 3) && tokens[3].equals("clear")) {
+            utils.exec("clear", null);
+        }
 
         if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], decodedQuery);
@@ -67,6 +70,10 @@ public class Frontend extends HttpServlet{
         String[] tokens = parseUrl(request.getPathInfo()); //  __/db/api/{{entity}}/{{method}}/
 
         String line = request.getReader().readLine();
+        if((tokens.length >= 3) && tokens[3].equals("clear")) {
+            utils.exec("clear", null);
+        }
+
         if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], line);
             response.getWriter().print(result);
