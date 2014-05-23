@@ -88,14 +88,13 @@ CREATE TABLE IF NOT EXISTS `forum`.`Threads` (
   `points` INT NULL,
   `slug` VARCHAR(128) NOT NULL,
   `title` VARCHAR(128) NOT NULL,
-  `isDeleted` TINYINT(1) NOT NULL,
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT FALSE,
   `isClosed` TINYINT(1) NOT NULL,
   PRIMARY KEY (`id`, `user_id`, `forum_id`),
-  UNIQUE INDEX `idThreads_UNIQUE` (`id` ASC),
   INDEX `fk_Threads_Forums1_idx` (`forum_id` ASC),
   INDEX `fk_Threads_Users1_idx` (`user_id` ASC),
-  INDEX `date_order` (`date` ASC, `isDeleted` ASC, `id` ASC),
-  INDEX `date_order_rev` (`date` DESC, `isDeleted` ASC, `id` ASC),
+  INDEX `date_order` (`date` ASC, `id` ASC),
+  INDEX `date_order_rev` (`date` DESC, `id` ASC),
   CONSTRAINT `fk_Threads_Forums1`
     FOREIGN KEY (`forum_id`)
     REFERENCES `forum`.`Forums` (`id`)
@@ -155,15 +154,14 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   `isHighlighted` TINYINT(1) NULL,
   `isEdited` TINYINT(1) NULL,
   `isSpam` TINYINT(1) NULL,
-  `isDeleted` TINYINT(1) NULL,
+  `isDeleted` TINYINT(1) NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`id`, `thread_id`, `user_id`, `forum_id`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_Posts_Threads1_idx` (`thread_id` ASC),
   INDEX `fk_Posts_Users1_idx` (`user_id` ASC),
   INDEX `fk_Posts_Posts1_idx` (`parent_post` ASC),
   INDEX `fk_Posts_Forums1_idx` (`forum_id` ASC),
-  UNIQUE INDEX `date_ordering` (`date` DESC, `isDeleted` ASC, `id` ASC),
-  INDEX `date_order_rev` (`date` DESC, `isDeleted` ASC, `id` ASC),
+  INDEX `date_ordering` (`date` DESC, `id` ASC),
+  INDEX `date_order_rev` (`date` DESC, `id` ASC),
   CONSTRAINT `fk_Posts_Threads1`
     FOREIGN KEY (`thread_id`)
     REFERENCES `forum`.`Threads` (`id`)
