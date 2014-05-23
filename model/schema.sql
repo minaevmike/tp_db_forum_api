@@ -21,7 +21,9 @@ CREATE TABLE IF NOT EXISTS `forum`.`Users` (
   PRIMARY KEY (`id`, `mail`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `mail_UNIQUE` (`mail` ASC),
-  INDEX `reverse` (`mail` ASC, `id` ASC))
+  INDEX `reverse` (`mail` ASC, `id` ASC),
+  UNIQUE INDEX `id_desc` (`id` DESC, `mail` ASC),
+  INDEX `reverse_desc` (`mail` ASC, `id` DESC))
 ENGINE = InnoDB;
 
 
@@ -36,9 +38,8 @@ CREATE TABLE IF NOT EXISTS `forum`.`Forums` (
   `short_name` VARCHAR(128) NOT NULL,
   `name` VARCHAR(128) NULL,
   PRIMARY KEY (`id`, `user_mail`, `short_name`),
-  UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   INDEX `fk_Forums_Users1_idx` (`user_mail` ASC),
-  UNIQUE INDEX `short_name_UNIQUE` (`short_name` ASC),
+  UNIQUE INDEX `short_name_UNIQUE` (`short_name` ASC, `id` ASC),
   CONSTRAINT `fk_Forums_Users1`
     FOREIGN KEY (`user_mail`)
     REFERENCES `forum`.`Users` (`mail`)
@@ -93,6 +94,8 @@ CREATE TABLE IF NOT EXISTS `forum`.`Threads` (
   UNIQUE INDEX `idThreads_UNIQUE` (`id` ASC),
   INDEX `fk_Threads_Forums1_idx` (`forum_id` ASC),
   INDEX `fk_Threads_Users1_idx` (`user_id` ASC),
+  INDEX `date_order` (`date` ASC, `isDeleted` ASC, `id` ASC),
+  INDEX `date_order_rev` (`date` DESC, `isDeleted` ASC, `id` ASC),
   CONSTRAINT `fk_Threads_Forums1`
     FOREIGN KEY (`forum_id`)
     REFERENCES `forum`.`Forums` (`id`)
@@ -159,6 +162,8 @@ CREATE TABLE IF NOT EXISTS `forum`.`Posts` (
   INDEX `fk_Posts_Users1_idx` (`user_id` ASC),
   INDEX `fk_Posts_Posts1_idx` (`parent_post` ASC),
   INDEX `fk_Posts_Forums1_idx` (`forum_id` ASC),
+  UNIQUE INDEX `date_ordering` (`date` DESC, `isDeleted` ASC, `id` ASC),
+  INDEX `date_order_rev` (`date` DESC, `isDeleted` ASC, `id` ASC),
   CONSTRAINT `fk_Posts_Threads1`
     FOREIGN KEY (`thread_id`)
     REFERENCES `forum`.`Threads` (`id`)
