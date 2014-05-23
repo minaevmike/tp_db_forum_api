@@ -57,15 +57,13 @@ CREATE TABLE IF NOT EXISTS `forum`.`Follows` (
   `follow` INT NULL,
   `isDeleted` TINYINT(1) NOT NULL DEFAULT FALSE,
   PRIMARY KEY (`user`, `follow`),
-  INDEX `fk_Follows_Users_idx` (`user` ASC),
-  INDEX `fk_Follows_Users1_idx` (`follow` ASC),
-  UNIQUE INDEX `userToFollowing` (`user` ASC, `follow` ASC),
-  CONSTRAINT `fk_Follows_Users`
+  UNIQUE INDEX `userToFollowing` (`follow` ASC, `user` ASC),
+  CONSTRAINT `fk_Follows_Users_m`
     FOREIGN KEY (`user`)
     REFERENCES `forum`.`Users` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Follows_Users1`
+  CONSTRAINT `fk_Follows_Users_m1`
     FOREIGN KEY (`follow`)
     REFERENCES `forum`.`Users` (`id`)
     ON DELETE NO ACTION
