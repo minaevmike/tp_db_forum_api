@@ -34,7 +34,7 @@ public class Frontend extends HttpServlet{
         thread = new Thread(ds);
         utils = new Utils(ds);
         post = new Post(ds);
-        utils.exec("clear", null);
+        //utils.exec("clear", null);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException 
