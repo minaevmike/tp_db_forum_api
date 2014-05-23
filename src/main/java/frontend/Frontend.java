@@ -50,9 +50,8 @@ public class Frontend extends HttpServlet{
         }
         if((tokens.length >= 3) && tokens[3].equals("clear")) {
             utils.exec("clear", null);
-        }
-
-        if(tokens.length > 4) {
+            response.getWriter().print("{code:0, \"message\":\"cleared\"}");
+        } else if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], decodedQuery);
             response.getWriter().print(result);
         } else {
@@ -72,9 +71,8 @@ public class Frontend extends HttpServlet{
         String line = request.getReader().readLine();
         if((tokens.length >= 3) && tokens[3].equals("clear")) {
             utils.exec("clear", null);
-        }
-
-        if(tokens.length > 4) {
+            response.getWriter().print("{code:0, \"message\":\"cleared\"}");
+        } else if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], line);
             response.getWriter().print(result);
         } else {
