@@ -139,7 +139,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(),
                 sb.toString(), resultHandler);
     }
@@ -183,7 +182,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(),
                 sb.toString(), resultHandler);
     }
@@ -216,8 +214,6 @@ public class DataService {
                 .append(user.isAnonymous())
                 .append(user.getAbout())
                 .close();
-
-        System.out.println(vsb.toString());
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
@@ -244,7 +240,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -255,7 +250,6 @@ public class DataService {
         sb.append(name).append("', ").append("about='").append(about).append("'")
                 .append(" WHERE mail=").append("'").append(mail).append("'");
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -267,7 +261,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("INSERT INTO Follows (`user`, `follow`) VALUES (");
         sb.append(user).append(",").append(follow).append(")").append("ON DUPLICATE KEY UPDATE isDeleted=FALSE");
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -278,7 +271,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Follows SET isDeleted=TRUE WHERE user = ");
         sb.append(user).append(" AND ").append("follow=").append(follow);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -348,7 +340,6 @@ public class DataService {
                 .append(forum.getShort_name())
                 .close();
 
-        System.out.println(vsb.toString());
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
@@ -376,7 +367,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -403,7 +393,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -430,7 +419,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -458,7 +446,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -481,7 +468,6 @@ public class DataService {
            .append(thread.isClosed())
            .close();
 
-        System.out.println(vsb.toString());
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
@@ -539,7 +525,6 @@ public class DataService {
         if (limit != null) {
             sb.append(" LIMIT ").append(limit);
         }
-        System.out.println(sb.toString());
         return exec.execQuery(getConnection(), sb.toString(), resultHandler);
     }
 
@@ -549,7 +534,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Threads SET isDeleted=TRUE WHERE id=");
         sb.append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -560,7 +544,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Threads SET isDeleted=FALSE WHERE id=");
         sb.append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -572,7 +555,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Threads SET isClosed=TRUE WHERE id=");
         sb.append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -583,7 +565,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Threads SET isClosed=FALSE WHERE id=");
         sb.append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -594,7 +575,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Threads SET message='");
         sb.append(message).append("', ").append("slug='").append(slug).append("'").append(" WHERE id=").append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -611,7 +591,6 @@ public class DataService {
         }
         sb.append(" WHERE id=").append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -622,7 +601,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("INSERT INTO Subscriptions (`user_id`, `thread_id`) VALUES (");
         sb.append(user_id).append(",").append(id).append(")").append("ON DUPLICATE KEY UPDATE isDeleted=FALSE");
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -633,7 +611,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Subscriptions SET isDeleted=TRUE WHERE user_id = ");
         sb.append(user_id).append(" AND thread_id=").append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -660,7 +637,6 @@ public class DataService {
            .append(post.isDeleted())
            .close();
 
-        System.out.println(vsb.toString());
         return exec.execUpdateAndReturnId(getConnection(), vsb.toString());
     }
 
@@ -694,7 +670,6 @@ public class DataService {
         ValueStringBuilder vsb = new ValueStringBuilder("UPDATE Posts SET isDeleted=TRUE WHERE id=");
         vsb.append(id);
 
-        System.out.println(vsb.toString());
         exec.execUpdate(getConnection(), vsb.toString());
         return true;
     }
@@ -705,7 +680,6 @@ public class DataService {
         ValueStringBuilder vsb = new ValueStringBuilder("UPDATE Posts SET isDeleted=FALSE WHERE id=");
         vsb.append(id);
 
-        System.out.println(vsb.toString());
         exec.execUpdate(getConnection(), vsb.toString());
         return true;
     }
@@ -716,7 +690,6 @@ public class DataService {
         StringBuilder sb = new StringBuilder("UPDATE Posts SET message='");
         sb.append(message).append("'").append(" WHERE id=").append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }
@@ -733,7 +706,6 @@ public class DataService {
         }
         sb.append(" WHERE id=").append(id);
 
-        System.out.println(sb.toString());
         exec.execUpdate(getConnection(), sb.toString());
         return true;
     }

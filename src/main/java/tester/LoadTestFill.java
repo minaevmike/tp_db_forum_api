@@ -16,10 +16,15 @@ import java.net.URL;
  */
 public class LoadTestFill {
     static int TESTS = 1000000;
+    static String url = "http://localhost/db/api/user/create";
+
 
     static void requestCreateUser(UserData userData) throws Exception
     {
+<<<<<<< HEAD
         String url = "http://localhost:8081/db/api/user/create";
+=======
+>>>>>>> 5b4541b4df51aa6cf6e06f884f93d35306ae5de2
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

@@ -48,19 +48,14 @@ public class Frontend extends HttpServlet{
         if(request.getQueryString() != null) {
             decodedQuery = URLDecoder.decode(request.getQueryString(), "UTF-8");
         }
-
-        if(tokens.length > 4) {
-            ////
-            System.out.println(counter + "\t GET: \t" + tokens[3] + "\t" + tokens[4] + "\t" + decodedQuery);
-            ////
-
+        if((tokens.length >= 3) && tokens[3].equals("clear")) {
+            utils.exec("clear", null);
+            response.getWriter().print("{code:0, \"message\":\"cleared\"}");
+        } else if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], decodedQuery);
             response.getWriter().print(result);
-            System.out.println(result);
         } else {
             response.getWriter().print("{code:1, \"message\":\"invalid url\"}");
-            System.out.println(request.getPathInfo());
-            System.out.println(decodedQuery);
         }
     }
 
@@ -74,18 +69,14 @@ public class Frontend extends HttpServlet{
         String[] tokens = parseUrl(request.getPathInfo()); //  __/db/api/{{entity}}/{{method}}/
 
         String line = request.getReader().readLine();
-        if(tokens.length > 4) {
-            ////
-            System.out.println(counter + "\t POST: \t" + tokens[3] + "\t" + tokens[4] + "\t" + line);
-            ////
-
+        if((tokens.length >= 3) && tokens[3].equals("clear")) {
+            utils.exec("clear", null);
+            response.getWriter().print("{code:0, \"message\":\"cleared\"}");
+        } else if(tokens.length > 4) {
             String result = executeApiQuery(tokens[3], tokens[4], line);
             response.getWriter().print(result);
-            System.out.println(result);
         } else {
-            System.out.println(counter + "\t POST: \t" + tokens[3] + "\t" + tokens[4] + "\t" + line);
-            System.out.println(request.getPathInfo());
-            System.out.println(line);
+            response.getWriter().print("{code:1, \"message\":\"invalid request\"}");
         }
     }
 
