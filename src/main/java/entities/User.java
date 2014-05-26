@@ -28,17 +28,22 @@ public class User implements EntityInterface {
 
     private String create(String data)
     {
+        UserParser userParser = new UserParser();
+        userParser.parse(data);
+        UserData userData = userParser.getResult();
         try {
-            UserParser userParser = new UserParser();
-            userParser.parse(data);
-            UserData userData = userParser.getResult();
-
             int id = dataService.createUser(userData);
 
             userData.setId(id);
             return JsonHelper.createResponse(userData.toJson()).toJSONString();
 
         } catch (SQLException e) {
+            try {
+                return JsonHelper.createResponse(dataService.getUserByMail(userData.getMail()).toJson()).toJSONString();
+            }
+            catch (SQLException ex){
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
         return null;

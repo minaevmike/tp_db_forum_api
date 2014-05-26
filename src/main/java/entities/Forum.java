@@ -26,17 +26,23 @@ public class Forum implements EntityInterface {
 
     private String create(String data)
     {
+        ForumParser forumParser = new ForumParser();
+        forumParser.parse(data);
+        ForumData forumData = forumParser.getResult();
         try {
-            ForumParser forumParser = new ForumParser();
-            forumParser.parse(data);
-            ForumData forumData = forumParser.getResult();
-
             int id = dataService.createForum(forumData);
             forumData.setId(id);
 
             return JsonHelper.createResponse(forumData.toJson()).toJSONString();
 
         } catch (SQLException e) {
+            try {
+                return JsonHelper.createResponse(dataService.getForumByName(forumData.getName()).toJson()).toJSONString();
+
+            }
+            catch (SQLException ex){
+                ex.printStackTrace();
+            }
             e.printStackTrace();
         }
         return null;
