@@ -19,7 +19,7 @@ public class LoadTestFill {
 
     static void requestCreateUser(UserData userData) throws Exception
     {
-        String url = "http://localhost/db/api/user/create";
+        String url = "http://localhost:8081/db/api/user/create";
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 

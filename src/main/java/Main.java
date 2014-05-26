@@ -23,7 +23,7 @@ public class Main {
         dataService.connect();
         Frontend frontend = new Frontend(dataService);
 
-        Server server = new Server(80);
+        Server server = new Server(8081);
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(frontend), "/*");
 

@@ -33,8 +33,8 @@ public class DataService {
                     "localhost:" +
                     "3306/" +
                     "forum?" +
-                    "user=sqadmin&" +
-                    "password=sqadmin");
+                    "user=root&" +
+                    "password=1234");
 
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             e.printStackTrace();
